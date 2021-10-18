@@ -4,9 +4,10 @@ DATABASES = {
     'ENGINE': 'django.db.backends.mysql',
     'NAME': 'teable_dev',
     'USER': 'root',
-    'PASSWORD': 'SkaksdmlTea!1T',
+    'PASSWORD': 'SkaksdmlTea',
+    # 'HOST': '/opt/bitnami/mysql/tmp/mysql.sock',
     'HOST': 'localhost',
-    'PORT': '3306',
+    'PORT': '1234',
   }
 }
 
