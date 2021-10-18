@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -75,7 +76,8 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.PositiveSmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)    
+    content_type = models.ForeignKey(
+        'DjangoContentType', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
 
     class Meta:
@@ -141,6 +143,7 @@ class SurveyResults(models.Model):
 class Teas(models.Model):
     name = models.CharField(max_length=255)
     flavor = models.CharField(max_length=255, blank=True, null=True)
+    caffeine = models.CharField(max_length=45)
     efficacy_num = models.PositiveIntegerField(blank=True, null=True)
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
