@@ -2,10 +2,12 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+# import subprocess
 
 
 def main():
     """Run administrative tasks."""
+    # subprocess.run('ssh -N -L 1234:localhost:3306 teable')
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'teable-functions.settings')
     try:
         from django.core.management import execute_from_command_line
