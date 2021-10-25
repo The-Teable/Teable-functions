@@ -13,7 +13,7 @@ import os
 
 def index(request):
     print(request)
-    return HttpResponse("hello, world. you're at the polls index.")
+    return HttpResponse("hello, we are pirates")
 
 
 def post_view(request):
