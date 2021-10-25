@@ -116,6 +116,28 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
+class FilteringResultProductMap(models.Model):
+    filtering_result = models.ForeignKey('FilteringResults', models.DO_NOTHING)
+    tea = models.ForeignKey('Teas', models.DO_NOTHING)
+    create_date = models.DateTimeField(blank=True, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'filtering_result_product_map'
+
+
+class FilteringResults(models.Model):
+    id = models.PositiveIntegerField(primary_key=True)
+    survey_result_id = models.PositiveIntegerField(unique=True)
+    create_date = models.DateTimeField(blank=True, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'filtering_results'
+
+
 class Questionnaires(models.Model):
     version = models.CharField(max_length=255)
     questions = models.CharField(max_length=1000)
@@ -128,6 +150,8 @@ class Questionnaires(models.Model):
 
 
 class SurveyResults(models.Model):
+    id = models.OneToOneField(
+        FilteringResults, models.DO_NOTHING, db_column='id', primary_key=True)
     survey_responses = models.CharField(max_length=5000)
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
@@ -142,35 +166,20 @@ class SurveyResults(models.Model):
 
 class Teas(models.Model):
     name = models.CharField(max_length=255)
+    brand = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=255, blank=True, null=True)
     flavor = models.CharField(max_length=255, blank=True, null=True)
     caffeine = models.CharField(max_length=45)
-    efficacy_num = models.PositiveIntegerField(blank=True, null=True)
+    efficacies = models.CharField(max_length=255, blank=True, null=True)
+    image_url = models.CharField(max_length=255, blank=True, null=True)
+    site_url = models.CharField(max_length=255, blank=True, null=True)
+    price = models.CharField(max_length=255, blank=True, null=True)
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'teas'
-
-
-class UserLikedTeaMap(models.Model):
-    user = models.OneToOneField('Users', models.DO_NOTHING, primary_key=True)
-    tea = models.ForeignKey(Teas, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'user_liked_tea_map'
-        unique_together = (('user', 'tea'),)
-
-
-class UserWantTeaMap(models.Model):
-    user = models.OneToOneField('Users', models.DO_NOTHING, primary_key=True)
-    tea = models.ForeignKey(Teas, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'user_want_tea_map'
-        unique_together = (('user', 'tea'),)
 
 
 class Users(models.Model):

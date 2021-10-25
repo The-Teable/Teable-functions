@@ -28,7 +28,8 @@ SECRET_KEY = my_settings.SECRET_KEY
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '3.37.225.35'
+    '3.37.225.35',
+    '127.0.0.1'
 ]
 
 # Application definition
