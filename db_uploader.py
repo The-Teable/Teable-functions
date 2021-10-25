@@ -13,12 +13,11 @@ now = datetime.now()
 
 with open(CSV_PATH_PRODUCTS, newline='') as csvfile:
     data_reader = csv.DictReader(csvfile)
-    next(data_reader, None) 
     for row in data_reader:
         print(row)
         Teas.objects.create(
-            name=row['brand'],
-            brand=row['name'],
+            name=row['name'],
+            brand=row['brand'],
             type=row['type'],
             flavor=row['flavor'],
             caffeine=row['caffeine'],
