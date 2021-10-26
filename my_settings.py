@@ -7,7 +7,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'SkaksdmlTea',
         # 'HOST': '/opt/bitnami/mysql/tmp/mysql.sock',
-        'HOST': '172.26.5.206',
+        'HOST': '127.0.0.1',
         'PORT': '1234',
     }
 }
