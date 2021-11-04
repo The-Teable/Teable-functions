@@ -6,7 +6,7 @@ DATABASES = {
         'NAME': 'teable_dev',
         'USER': 'root',
         'PASSWORD': 'SkaksdmlTea',
-        'HOST': '/opt/bitnami/mysql/tmp/mysql.sock',
+        'HOST': '/opt/bitnami/mariadb/tmp/mysql.sock',
         # 'HOST': '127.0.0.1',
         'PORT': '1234',
     }
