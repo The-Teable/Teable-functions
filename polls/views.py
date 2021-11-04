@@ -6,8 +6,39 @@ from polls.serializers import TeaSerializer
 from .models import Users, Teas
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from smtplib import SMTP_SSL
 
 # Create your views here.
+
+def put():
+    try:
+        toEmail = 'cherry@make.education'
+        fromEmail = 'connect@teave.co.kr'
+        TitleEmail = '이메일 제목입니다'
+
+        msg = "\r\n".join([
+            "From: " + fromEmail,
+            "To: " + toEmail,
+            "Subject: " + TitleEmail,
+            "",
+            "여기에 내용이 들어갑니다"
+        ])
+
+        ## Daum SMTP
+        conn = SMTP_SSL("smtp.daum.net:465")
+        conn.ehlo()
+
+        loginId = 'connect@teave.co.kr'
+        loginPassword = 'ekdmadyd1!'
+        conn.login(loginId, loginPassword)
+
+        conn.sendmail(fromEmail, toEmail, msg)
+        conn.close()
+        return 'Success to send emails.'
+
+
+    except Exception as e:
+        return "Failed. error" + str(e)
 
 
 def index(request):
