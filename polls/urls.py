@@ -1,12 +1,7 @@
 from django.urls import path, include, re_path
 from django.contrib import admin
-<<<<<<< Updated upstream
 from polls.views import TeaListAPI, put
-=======
-from polls.views import TeaListAPI
 from django.views.generic import TemplateView
->>>>>>> Stashed changes
-
 from . import views
 
 
