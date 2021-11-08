@@ -33,8 +33,9 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '15.164.54.107',
     '127.0.0.1',
-    '172.26.12.114',
-    'teave.co.kr'
+    '172.26.13.179',
+    'teave.co.kr',
+    'localhost',
 ]
 
 # Application definition
@@ -71,7 +72,7 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
-    'http://loaclhost:3000',
+    'http://localhost:3000',
     'http://teave.co.kr',
     'http://3.37.225.35',
     'http://172.26.5.206',

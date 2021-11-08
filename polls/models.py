@@ -88,6 +88,7 @@ class DjangoAdminLog(models.Model):
 class DjangoContentType(models.Model):
     app_label = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
+    name = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
