@@ -22,7 +22,9 @@ with open(CSV_PATH_PRODUCTS, newline='') as csvfile:
             flavor=row['flavor'],
             caffeine=row['caffeine'],
             efficacies=row['efficacies'],
+            site_url=row['url'],
             price=row['price'],
+            stock=row['stock'],
             create_date = now,
             update_date = now,
         )
