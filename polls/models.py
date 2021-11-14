@@ -76,8 +76,7 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.PositiveSmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey(
-        'DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
 
     class Meta:
@@ -88,7 +87,6 @@ class DjangoAdminLog(models.Model):
 class DjangoContentType(models.Model):
     app_label = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
-    name = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -129,8 +127,7 @@ class FilteringResultProductMap(models.Model):
 
 
 class FilteringResults(models.Model):
-    id = models.PositiveIntegerField(primary_key=True)
-    survey_result_id = models.PositiveIntegerField(unique=True)
+    survey_result = models.OneToOneField('SurveyResults', models.DO_NOTHING)
     create_date = models.DateTimeField(blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
 
@@ -151,8 +148,6 @@ class Questionnaires(models.Model):
 
 
 class SurveyResults(models.Model):
-    id = models.OneToOneField(
-        FilteringResults, models.DO_NOTHING, db_column='id', primary_key=True)
     survey_responses = models.CharField(max_length=5000)
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
@@ -162,7 +157,6 @@ class SurveyResults(models.Model):
     class Meta:
         managed = False
         db_table = 'survey_results'
-        unique_together = (('id', 'user', 'questionnaire'),)
 
 
 class Teas(models.Model):
@@ -175,6 +169,7 @@ class Teas(models.Model):
     image_url = models.CharField(max_length=255, blank=True, null=True)
     site_url = models.CharField(max_length=255, blank=True, null=True)
     price = models.CharField(max_length=255, blank=True, null=True)
+    stock = models.CharField(max_length=64, blank=True, null=True)
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
 
