@@ -6,7 +6,7 @@ from datetime import datetime
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "teable-functions.settings")
 django.setup()
 
-from polls.models import Teas
+from apis.models import Teas
 
 CSV_PATH_PRODUCTS = './products.csv'
 now = datetime.now()
