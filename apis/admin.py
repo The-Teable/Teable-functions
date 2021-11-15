@@ -1,21 +1,12 @@
 from django.contrib import admin
 from . import models
 
-# admin customizing
-
-
-class TeasAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'price']
-    list_display_links = ['id', 'name']
-
-# Register your models here.
-
 
 admin.site.register(models.FilteringResultProductMap)
 admin.site.register(models.FilteringResults)
 admin.site.register(models.Questionnaires)
 admin.site.register(models.SurveyResults)
-admin.site.register(models.Teas, TeasAdmin)
+admin.site.register(models.Teas, models.TeasAdmin)
 admin.site.register(models.Users)
 admin.site.register(models.DjangoSession)
 admin.site.register(models.DjangoMigrations)
