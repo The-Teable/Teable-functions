@@ -149,7 +149,7 @@ class Questionnaires(models.Model):
 
 
 class SurveyResults(models.Model):
-    survey_responses = models.CharField(max_length=5000)
+    survey_responses = models.CharField(max_length=5000, blank=True, null=True)
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING)
@@ -183,6 +183,9 @@ class Users(models.Model):
     name = models.CharField(max_length=255)
     age = models.PositiveIntegerField(blank=True, null=True)
     gender = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    tel = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
 
