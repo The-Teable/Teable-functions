@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '172.26.5.206',
     '15.164.54.107',
+    'teable.kr',
 ]
 
 # Application definition
@@ -81,6 +82,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://172.26.13.179',
     'http://54.180.182.216',
     'http://172.26.8.186',
+    'https://teable.kr',
 ]
 
 ROOT_URLCONF = 'teable-functions.urls'
