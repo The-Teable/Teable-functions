@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'apis',
+    'teable-functions',
     'rest_framework',
     'corsheaders',
 ]
@@ -75,9 +77,11 @@ CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
     'http://localhost:3000',
-    'http://teave.co.kr',
-    'http://3.37.225.35',
-    'http://172.26.5.206',
+    'https://teave.co.kr',
+    'http://15.164.54.107',
+    'http://172.26.13.179',
+    'http://54.180.182.216',
+    'http://172.26.8.186',
 ]
 
 ROOT_URLCONF = 'teable-functions.urls'
