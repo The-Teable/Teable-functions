@@ -2,7 +2,7 @@ from django.urls import path, include
 from django.contrib import admin
 from django.urls.conf import re_path
 # from apis.views import send_email
-from .views import FilteringResultsView, QuestionnairesView, SendEmail,SurveyResultsView, UsersView
+from .views import FilteringResultsView, QuestionnairesView, SendEmail, SurveyResults2View,SurveyResultsView, UsersView
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
@@ -34,6 +34,26 @@ survey_results_detail = SurveyResultsView.as_view({
     'get': 'retrieve'
 })
 
+survey_results_2_create = SurveyResults2View.as_view({
+    # 'get': 'list',
+    'post': 'create',
+})
+
+survey_results_2_update = SurveyResults2View.as_view({
+    # 'get': 'list',
+    'put': 'update',
+    'patch': 'partial_update'
+})
+
+survey_results_2_per_user = SurveyResults2View.as_view({
+    'get': 'list'
+})
+
+survey_results_2_detail = SurveyResults2View.as_view({
+    'get': 'retrieve'
+})
+
+
 questionnaires_list = QuestionnairesView.as_view({
     'get': 'list'
 })
@@ -55,12 +75,20 @@ urlpatterns = format_suffix_patterns([
     # users
     path('users/new/', users_list, name='users_list'),
     re_path('users/(?P<userId>.+)/$', users_detail, name="users_detail"),
+    
     # survey_results
     path('survey-results/all/', survey_results_per_user, name='survey_results_per_user'),
     re_path('survey-results/all/(?P<userId>.+)/$', survey_results_per_user, name='survey_results_per_user'),
     path('survey-results/<int:pk>/', survey_results_detail, name='survey_results_list'),
     path('survey-results/new/', survey_results_create, name='survey_results_create'),
     path('survey-results/update/', survey_results_update, name='survey_results_update'),
+
+    # survey_results_2
+    path('survey-results-2/all/', survey_results_2_per_user, name='survey_results_2_per_user'),
+    re_path('survey-results-2/all/(?P<userId>.+)/$', survey_results_2_per_user, name='survey_results_2_per_user'),
+    path('survey-results-2/<int:pk>/', survey_results_2_detail, name='survey_results_2_list'),
+    path('survey-results-2/new/', survey_results_2_create, name='survey_results_2_create'),
+    path('survey-results-2/update/', survey_results_2_update, name='survey_results_2_update'),
 
     # questionnaires
     re_path('^questionnaires/', questionnaires_list, name='questionnaires_list'),
