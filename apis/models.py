@@ -159,6 +159,18 @@ class SurveyResults(models.Model):
         db_table = 'survey_results'
 
 
+class SurveyResults2(models.Model):
+    survey_responses = models.CharField(max_length=5000, blank=True, null=True)
+    create_date = models.DateTimeField()
+    update_date = models.DateTimeField(blank=True, null=True)
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    questionnaire = models.ForeignKey(Questionnaires, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'survey_results_2'
+
+
 class Teas(models.Model):
     name = models.CharField(max_length=255)
     brand = models.CharField(max_length=255, blank=True, null=True)

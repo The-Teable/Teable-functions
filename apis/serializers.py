@@ -1,7 +1,7 @@
 from datetime import datetime
 from rest_framework import serializers
 from rest_framework.response import Response
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults
+from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, SurveyResults2
 from .lib import filtering_algorithm
 import json
 
@@ -21,6 +21,30 @@ class UserSerializer(serializers.ModelSerializer):
 class SurveyResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = SurveyResults
+        fields = ['survey_responses']
+    def create(self, validated_data):
+        query_params = self.context['request'].query_params
+        user_id = query_params.get('userId')
+        version = query_params.get('version')
+        print(user_id, version, not(version), not(user_id))
+        if (not user_id) or (not version):
+            raise serializers.ValidationError('Params not provided enough')
+        validated_data['user_id'] = user_id
+        validated_data['questionnaire_id'] = version
+        validated_data['create_date'] = datetime.now()
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        survey_id = self.context['request'].query_params.get('surveyId')
+        if not survey_id:
+            raise serializers.ValidationError('Params not provided enough')
+        validated_data['survey_id'] = survey_id
+        validated_data['update_date'] = datetime.now()
+        return super().update(instance, validated_data)
+        
+class SurveyResult2Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = SurveyResults2
         fields = ['survey_responses']
     def create(self, validated_data):
         query_params = self.context['request'].query_params
