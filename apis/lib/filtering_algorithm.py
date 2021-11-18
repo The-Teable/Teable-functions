@@ -61,7 +61,7 @@ def tea_filtering(user_teatype, user_scent, user_effect, user_caff):
     def caff_filter(caffs):
         user_cafflist = []
         for caff in caffs:
-            if caff == user_caff:
+            if caff in user_caff:
                 user_cafflist.append(True)
             else:
                 user_cafflist.append(False)
@@ -87,28 +87,25 @@ def tea_filtering(user_teatype, user_scent, user_effect, user_caff):
     user_finalise = df[cond_type & cond_effect & cond_scent & cond_caff]
 
     user_finalise.sort_values(by='재고', axis=0, ascending=False)
+
     if len(user_finalise) > 8:
         user_finalise = user_finalise.sort_values(
             by='재고', axis=0, ascending=False).head(8)
     else:
-        user_finalise = df[cond_type & cond_scent & cond_caff].sort_values(
+        user_finalise = user_finalise.append(
+            df[cond_type & cond_scent & cond_caff]).drop_duplicates(['제품 이름'])
+        user_finalise = user_finalise.sort_values(
             by='재고', ascending=False).head(8)
         if len(user_finalise) < 8:
-            user_finalise = df[cond_type & cond_scent].sort_values(
+            user_finalise = user_finalise.append(
+                df[cond_type & cond_effect & cond_caff]).drop_duplicates(['제품 이름'])
+            user_finalise = user_finalise.sort_values(
                 by='재고', ascending=False).head(8)
             if len(user_finalise) < 8:
-                user_finalise = df[cond_type].sort_values(
+                user_finalise = user_finalise.append(
+                    df[cond_type & cond_caff]).drop_duplicates(['제품 이름'])
+                user_finalise = user_finalise.sort_values(
                     by='재고', ascending=False).head(8)
-                if len(user_finalise) < 8:
-                    user_finalise = user_finalise.append(
-                        df[cond_scent & cond_effect & cond_caff])
-                    user_finalise = user_finalise.sort_values(
-                        by='재고', ascending=False).head(8)
-                    if len(user_finalise) < 8:
-                        user_finalise = user_finalise.append(
-                            df[cond_scent & cond_effect])
-                        user_finalise = user_finalise.sort_values(
-                            by='재고', ascending=False).head(8)
     return user_finalise
 
 
