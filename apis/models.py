@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib import admin
 
+
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -76,7 +77,8 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.PositiveSmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    content_type = models.ForeignKey(
+        'DjangoContentType', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
 
     class Meta:
@@ -206,8 +208,34 @@ class Users(models.Model):
 
 # admin customizing
 
+
 class TeasAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'price']
+    list_display = ['id', 'brand', 'name', 'price']
+    list_display_links = ['id', 'name']
+
+
+class SurveyResultsAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'survey_responses']
+    list_display_links = ['id', 'user']
+
+
+class SurveyResults2Admin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'survey_responses']
+    list_display_links = ['id', 'user']
+
+
+class FilteringResultsAdmin(admin.ModelAdmin):
+    list_display = ['id', 'survey_result']
+    list_display_links = ['id', 'survey_result']
+
+
+class FilteringResultProductMapAdmin(admin.ModelAdmin):
+    list_display = ['id', 'filtering_result', 'tea']
+    list_display_links = ['id', 'filtering_result', 'tea']
+
+
+class UsersAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'gender', 'age']
     list_display_links = ['id', 'name']
 
 # Register your models here.
