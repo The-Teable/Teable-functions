@@ -106,6 +106,21 @@ def tea_filtering(user_teatype, user_scent, user_effect, user_caff):
                     df[cond_type & cond_caff]).drop_duplicates(['제품 이름'])
                 user_finalise = user_finalise.sort_values(
                     by='재고', ascending=False).head(8)
+                if len(user_finalise) < 8:
+                    user_finalise = user_finalise.append(
+                        df[cond_type & cond_scent]).drop_duplicates(['제품 이름'])
+                    user_finalise = user_finalise.sort_values(
+                        by='재고', ascending=False).head(8)
+                    if len(user_finalise) < 8:
+                        user_finalise = user_finalise.append(
+                            df[cond_type & cond_effect]).drop_duplicates(['제품 이름'])
+                        user_finalise = user_finalise.sort_values(
+                            by='재고', ascending=False).head(8)
+                        if len(user_finalise) < 8:
+                            user_finalise = user_finalise.append(
+                                df[cond_type]).drop_duplicates(['제품 이름'])
+                            user_finalise = user_finalise.sort_values(
+                                by='재고', ascending=False).head(8)
     return user_finalise
 
 
