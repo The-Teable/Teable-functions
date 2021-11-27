@@ -1,12 +1,12 @@
 브랜드,제품 이름,차 종류,"맛,향(필터링)",효능(필터링),카페인 여부,1개당 가격,url,재고
-알디프,밤의 차,블렌딩 티,"달콤, 구수","기분전환, 안정 및 숙면",X ,1600,https://altdif.com/product/detail.html?product_no=220&cate_no=134&display_group=1,15
-알디프,낮의 차,블렌딩 티,"과일, 꽃, 달콤",기분전환,X,1600,https://altdif.com/product/detail.html?product_no=219&cate_no=134&display_group=1,16
-알디프,올드블랙매직,블렌딩 티,달콤,기분전환,O,1600,https://altdif.com/product/detail.html?product_no=198&cate_no=134&display_group=1,27
-알디프,비포 선셋,블렌딩 티,달콤,"기분전환, 건강",X,1600,https://altdif.com/product/detail.html?product_no=199&cate_no=134&display_group=1,19
-알디프,무드포러브,블렌딩 티,과일,기분전환,O,1600,https://altdif.com/product/detail.html?product_no=202&cate_no=134&display_group=1,27
-알디프,나랑 갈래,블렌딩 티,"과일, 꽃",기분전환,X,1600,https://altdif.com/product/detail.html?product_no=201&cate_no=134&display_group=1,23
-알디프,벨벳 골드 라운드,블렌딩 티,달콤,"기분전환, 안정 및 숙면",O,1600,https://altdif.com/product/detail.html?product_no=207&cate_no=134&display_group=1,28
-알디프,밀키 애프터이미지,블렌딩 티,달콤,추운날,O,1600,https://altdif.com/product/detail.html?product_no=203&cate_no=134&display_group=1,25
+알디프,밤의 차,블렌딩 티,"달콤, 구수","기분전환, 안정 및 숙면",X ,1600,https://altdif.com/product/detail.html?product_no=220&cate_no=134&display_group=1,0
+알디프,낮의 차,블렌딩 티,"과일, 꽃, 달콤",기분전환,X,1600,https://altdif.com/product/detail.html?product_no=219&cate_no=134&display_group=1,2
+알디프,올드블랙매직,블렌딩 티,달콤,기분전환,O,1600,https://altdif.com/product/detail.html?product_no=198&cate_no=134&display_group=1,19
+알디프,비포 선셋,블렌딩 티,달콤,"기분전환, 건강",X,1600,https://altdif.com/product/detail.html?product_no=199&cate_no=134&display_group=1,7
+알디프,무드포러브,블렌딩 티,과일,기분전환,O,1600,https://altdif.com/product/detail.html?product_no=202&cate_no=134&display_group=1,14
+알디프,나랑 갈래,블렌딩 티,"과일, 꽃",기분전환,X,1600,https://altdif.com/product/detail.html?product_no=201&cate_no=134&display_group=1,8
+알디프,벨벳 골드 라운드,블렌딩 티,달콤,"기분전환, 안정 및 숙면",O,1600,https://altdif.com/product/detail.html?product_no=207&cate_no=134&display_group=1,17
+알디프,밀키 애프터이미지,블렌딩 티,달콤,추운날,O,1600,https://altdif.com/product/detail.html?product_no=203&cate_no=134&display_group=1,23
 티퍼런스,코코 퍼플티,"블렌딩 티, 홍차","과일, 달콤",안정 및 숙면,O,1800,https://www.teafference.com/product/coco,27
 티퍼런스,베리 퍼플티,"블렌딩 티, 홍차",과일,다이어트및피부관리,O,1800,https://www.teafference.com/product/berry,26
 티퍼런스,에이비씨 퍼플티,"블렌딩 티, 홍차",상큼,안정 및 숙면,O,1800,https://www.teafference.com/product/abc,30
