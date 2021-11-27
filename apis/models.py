@@ -210,7 +210,7 @@ class Users(models.Model):
 
 
 class TeasAdmin(admin.ModelAdmin):
-    list_display = ['id', 'brand', 'name', 'price']
+    list_display = ['id', 'brand', 'name', 'price', 'stock']
     list_display_links = ['id', 'name']
 
 
