@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 # import scipy
 # import math
-# import random
+import random
 # import sklearn
 # from sklearn.model_selection import train_test_split
 # from sklearn.metrics.pairwise import cosine_similarity
@@ -86,41 +86,46 @@ def tea_filtering(user_teatype, user_scent, user_effect, user_caff):
     cond_caff = df.카페인.apply(caff_filter)
     user_finalise = df[cond_type & cond_effect & cond_scent & cond_caff]
 
-    user_finalise.sort_values(by='재고', axis=0, ascending=False)
-
     if len(user_finalise) > 8:
-        user_finalise = user_finalise.sort_values(
-            by='재고', axis=0, ascending=False).head(8)
+        # user_finalise = user_finalise.sort_values(
+        #     by='재고', axis=0, ascending=False).head(8)
+        user_finalise = user_finalise.sample(n=8)
     else:
         user_finalise = user_finalise.append(
             df[cond_type & cond_scent & cond_caff]).drop_duplicates(['제품 이름'])
-        user_finalise = user_finalise.sort_values(
-            by='재고', ascending=False).head(8)
+        # user_finalise = user_finalise.sort_values(
+        #     by='재고', ascending=False).head(8)
+        user_finalise = user_finalise.sample(n=8)
         if len(user_finalise) < 8:
             user_finalise = user_finalise.append(
                 df[cond_type & cond_effect & cond_caff]).drop_duplicates(['제품 이름'])
-            user_finalise = user_finalise.sort_values(
-                by='재고', ascending=False).head(8)
+            # user_finalise = user_finalise.sort_values(
+            #     by='재고', ascending=False).head(8)
+            user_finalise = user_finalise.sample(n=8)
             if len(user_finalise) < 8:
                 user_finalise = user_finalise.append(
                     df[cond_type & cond_caff]).drop_duplicates(['제품 이름'])
-                user_finalise = user_finalise.sort_values(
-                    by='재고', ascending=False).head(8)
+                # user_finalise = user_finalise.sort_values(
+                #     by='재고', ascending=False).head(8)
+                user_finalise = user_finalise.sample(n=8)
                 if len(user_finalise) < 8:
                     user_finalise = user_finalise.append(
                         df[cond_type & cond_scent]).drop_duplicates(['제품 이름'])
-                    user_finalise = user_finalise.sort_values(
-                        by='재고', ascending=False).head(8)
+                    # user_finalise = user_finalise.sort_values(
+                    #     by='재고', ascending=False).head(8)
+                    user_finalise = user_finalise.sample(n=8)
                     if len(user_finalise) < 8:
                         user_finalise = user_finalise.append(
                             df[cond_type & cond_effect]).drop_duplicates(['제품 이름'])
-                        user_finalise = user_finalise.sort_values(
-                            by='재고', ascending=False).head(8)
+                        # user_finalise = user_finalise.sort_values(
+                        #     by='재고', ascending=False).head(8)
+                        user_finalise = user_finalise.sample(n=8)
                         if len(user_finalise) < 8:
                             user_finalise = user_finalise.append(
                                 df[cond_type]).drop_duplicates(['제품 이름'])
-                            user_finalise = user_finalise.sort_values(
-                                by='재고', ascending=False).head(8)
+                            # user_finalise = user_finalise.sort_values(
+                            #     by='재고', ascending=False).head(8)
+                            user_finalise = user_finalise.sample(n=8)
     return user_finalise
 
 
