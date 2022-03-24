@@ -1,4 +1,5 @@
 /venv/
+/myvenv/
 /.ssh/
 *.log
 *.pot

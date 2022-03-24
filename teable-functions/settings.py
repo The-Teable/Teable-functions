@@ -31,13 +31,9 @@ SECRET_KEY = my_settings.SECRET_KEY
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '15.164.54.107',
     '127.0.0.1',
-    '172.26.13.179',
     'teave.co.kr',
     'localhost',
-    '172.26.5.206',
-    '15.164.54.107',
     'teable.kr',
 ]
 
@@ -78,10 +74,6 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'http://localhost:3000',
     'https://teave.co.kr',
-    'http://15.164.54.107',
-    'http://172.26.13.179',
-    'http://54.180.182.216',
-    'http://172.26.8.186',
     'https://teable.kr',
 ]
 
