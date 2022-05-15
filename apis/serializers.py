@@ -78,8 +78,10 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         query_params = self.context['request'].query_params
+        user_id = query_params.get('userId')
         survey_id = query_params.get('surveyId')
-        if not survey_id:
+        print(user_id, survey_id, not(survey_id), not(user_id))
+        if not survey_id or not user_id:
             raise serializers.ValidationError('Params not provided enough')
         survey_result = SurveyResults.objects.filter(id=survey_id)
         if len(survey_result) < 1:
@@ -93,6 +95,7 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         tea_caffeine = survey_response['caffeine']
         algorithm_result_str = filtering_algorithm.tea_filtering(''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
         algorithm_result_json = json.loads(algorithm_result_str)
+        validated_data['user_id'] = user_id
         validated_data['survey_result_id'] = survey_result[0].id
         validated_data['create_date'] = datetime.now()
         created_instance = super().create(validated_data)
@@ -103,5 +106,5 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
             if len(tea_db) < 1:
                 raise serializers.ValidationError('There is no corresponding tea info')
             teas.append(tea_db[0])
-            FilteringResultProductMap.objects.create(filtering_result_id=filtering_result_id, tea_id=tea_db[0].id, create_date=datetime.now())
+            FilteringResultProductMap.objects.create(filtering_result_id=filtering_result_id, tea_id=tea_db[0].id, create_date=datetime.now(), user_id=user_id)
         return created_instance
