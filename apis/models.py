@@ -77,8 +77,7 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.PositiveSmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey(
-        'DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
 
     class Meta:
@@ -122,6 +121,7 @@ class FilteringResultProductMap(models.Model):
     tea = models.ForeignKey('Teas', models.DO_NOTHING)
     create_date = models.DateTimeField(blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
+    user = models.ForeignKey('Users', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -132,6 +132,7 @@ class FilteringResults(models.Model):
     survey_result = models.OneToOneField('SurveyResults', models.DO_NOTHING)
     create_date = models.DateTimeField(blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
+    user = models.ForeignKey('Users', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -190,6 +191,16 @@ class Teas(models.Model):
     class Meta:
         managed = False
         db_table = 'teas'
+
+
+class UserBuyProduct(models.Model):
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    tea = models.ForeignKey(Teas, models.DO_NOTHING)
+    create_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'user_buy_product'
 
 
 class Users(models.Model):
