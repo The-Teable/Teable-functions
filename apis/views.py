@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from django.http import HttpResponse
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
-from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResult2Serializer, SurveyResultSerializer, UserSerializer
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, SurveyResults2, Teas, Users
+from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResult2Serializer, SurveyResultSerializer, UserSerializer, UserBuyProductSerializer
+from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, SurveyResults2, Teas, Users, UserBuyProduct
 # import import_ipynb
 # import filtering_algorithm
 from .lib import filtering_algorithm
@@ -168,3 +168,13 @@ class FilteringResultsView(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save()
         return Response({'filtering_id': created_instance.id}, status=200)
+
+class UserBuyProductView(viewsets.ModelViewSet):
+    queryset = UserBuyProduct.objects.all()
+    serializer_class = UserBuyProductSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        created_instance = serializer.save()
+        return Response({'user_buy_product_id': created_instance.id}, status=200)
