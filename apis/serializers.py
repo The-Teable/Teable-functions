@@ -1,7 +1,7 @@
 from datetime import datetime
 from rest_framework import serializers
 from rest_framework.response import Response
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, SurveyResults2
+from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, SurveyResults2, UserBuyProduct
 from .lib import filtering_algorithm
 import json
 
@@ -108,3 +108,21 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
             teas.append(tea_db[0])
             FilteringResultProductMap.objects.create(filtering_result_id=filtering_result_id, tea_id=tea_db[0].id, create_date=datetime.now(), user_id=user_id)
         return created_instance
+
+
+class UserBuyProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBuyProduct
+        fields = []
+
+    def create(self, validated_data):
+        query_params = self.context['request'].query_params
+        user_id = query_params.get('userId')
+        if (not user_id):
+            raise serializers.ValidationError('Params not provided enough')
+        filtering_result_product = FilteringResultProductMap.objects.filter(user_id=user_id)
+        if len(filtering_result_product) < 1:
+            raise serializers.ValidationError('There is no corresponding filtering result product')
+        for product in filtering_result_product:
+            create_instance = UserBuyProduct.objects.create(user_id = user_id, tea_id = product.tea_id, create_date = datetime.now())
+        return create_instance
