@@ -2,7 +2,8 @@ from datetime import datetime
 from rest_framework import serializers
 from rest_framework.response import Response
 from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, SurveyResults2, UserBuyProduct
-from .lib import filtering_algorithm
+# from .lib import filtering_algorithm
+from .lib import teave_filtering
 import json
 
 class TeaSerializer(serializers.ModelSerializer):
@@ -93,7 +94,8 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         tea_flavor = survey_response['flavor']
         tea_expect = survey_response['expect']
         tea_caffeine = survey_response['caffeine']
-        algorithm_result_str = filtering_algorithm.tea_filtering(''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
+        # algorithm_result_str = filtering_algorithm.tea_filtering(''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
+        algorithm_result_str = teave_filtering.hybrid_recommend_tea.to_json(orient = 'records', force_ascii = False)
         algorithm_result_json = json.loads(algorithm_result_str)
         validated_data['user_id'] = user_id
         validated_data['survey_result_id'] = survey_result[0].id
@@ -102,7 +104,7 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         filtering_result_id = created_instance.id
         teas = []
         for tea in algorithm_result_json:
-            tea_db = Teas.objects.filter(brand=tea['브랜드'], name=tea['제품 이름'])
+            tea_db = Teas.objects.filter(brand=tea['tea_brand'], name=tea['tea_name'])
             if len(tea_db) < 1:
                 raise serializers.ValidationError('There is no corresponding tea info')
             teas.append(tea_db[0])
