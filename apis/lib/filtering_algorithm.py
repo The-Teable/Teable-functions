@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 # import scipy
 # import math
 import random
@@ -134,6 +131,3 @@ def tea_filtering(user_teatype, user_scent, user_effect, user_caff):
                             user_finalise = user_finalise.sample(
                                 frac=1).reset_index(drop=True).head(8)
     return user_finalise
-
-
-# %%
