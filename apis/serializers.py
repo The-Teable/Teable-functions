@@ -1,9 +1,8 @@
 from datetime import datetime
 from rest_framework import serializers
 from rest_framework.response import Response
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, SurveyResults2, UserBuyProduct
-# from .lib import filtering_algorithm
-from .lib import teave_filtering
+from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, UserBuyProduct, UserClickProduct
+from .lib import common_filtering, teave_filtering
 import json
 
 class TeaSerializer(serializers.ModelSerializer):
@@ -42,30 +41,31 @@ class SurveyResultSerializer(serializers.ModelSerializer):
         validated_data['survey_id'] = survey_id
         validated_data['update_date'] = datetime.now()
         return super().update(instance, validated_data)
-        
-class SurveyResult2Serializer(serializers.ModelSerializer):
-    class Meta:
-        model = SurveyResults2
-        fields = ['survey_responses']
-    def create(self, validated_data):
-        query_params = self.context['request'].query_params
-        user_id = query_params.get('userId')
-        version = query_params.get('version')
-        print(user_id, version, not(version), not(user_id))
-        if (not user_id) or (not version):
-            raise serializers.ValidationError('Params not provided enough')
-        validated_data['user_id'] = user_id
-        validated_data['questionnaire_id'] = version
-        validated_data['create_date'] = datetime.now()
-        return super().create(validated_data)
+
+# 설문조사 결과        
+# class SurveyResult2Serializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = SurveyResults2
+#         fields = ['survey_responses']
+#     def create(self, validated_data):
+#         query_params = self.context['request'].query_params
+#         user_id = query_params.get('userId')
+#         version = query_params.get('version')
+#         print(user_id, version, not(version), not(user_id))
+#         if (not user_id) or (not version):
+#             raise serializers.ValidationError('Params not provided enough')
+#         validated_data['user_id'] = user_id
+#         validated_data['questionnaire_id'] = version
+#         validated_data['create_date'] = datetime.now()
+#         return super().create(validated_data)
     
-    def update(self, instance, validated_data):
-        survey_id = self.context['request'].query_params.get('surveyId')
-        if not survey_id:
-            raise serializers.ValidationError('Params not provided enough')
-        validated_data['survey_id'] = survey_id
-        validated_data['update_date'] = datetime.now()
-        return super().update(instance, validated_data)
+#     def update(self, instance, validated_data):
+#         survey_id = self.context['request'].query_params.get('surveyId')
+#         if not survey_id:
+#             raise serializers.ValidationError('Params not provided enough')
+#         validated_data['survey_id'] = survey_id
+#         validated_data['update_date'] = datetime.now()
+#         return super().update(instance, validated_data)
 
 class QuestionnairesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -94,8 +94,8 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         tea_flavor = survey_response['flavor']
         tea_expect = survey_response['expect']
         tea_caffeine = survey_response['caffeine']
-        # algorithm_result_str = filtering_algorithm.tea_filtering(''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
-        algorithm_result_str = teave_filtering.hybrid_recommend_tea.to_json(orient = 'records', force_ascii = False)
+        # algorithm_result_str = common_filtering.tea_filtering(''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
+        algorithm_result_str = teave_filtering.get_filtering_tea(user_id, ''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
         algorithm_result_json = json.loads(algorithm_result_str)
         validated_data['user_id'] = user_id
         validated_data['survey_result_id'] = survey_result[0].id
@@ -128,3 +128,14 @@ class UserBuyProductSerializer(serializers.ModelSerializer):
         for product in filtering_result_product:
             create_instance = UserBuyProduct.objects.create(user_id = user_id, tea_id = product.tea_id, create_date = datetime.now())
         return create_instance
+
+class UserClickProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserClickProduct
+        fields = []
+
+    def create(self, validated_data):
+        user_id = validated_data['userId']
+        tea_id = validated_data['teaId']
+        if not user_id or not tea_id:
+            raise serializers.ValidationError('Validated Data not provided enough')
