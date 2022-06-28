@@ -3,11 +3,11 @@ from datetime import datetime, timezone
 from django.http import HttpResponse
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
-from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResult2Serializer, SurveyResultSerializer, UserSerializer, UserBuyProductSerializer
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, SurveyResults2, Teas, Users, UserBuyProduct
+from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, UserSerializer, UserBuyProductSerializer, UserClickProductSerializer
+from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, SurveyResults2, Teas, Users, UserBuyProduct, UserClickProduct
 # import import_ipynb
 # import filtering_algorithm
-from .lib import filtering_algorithm
+from .lib import common_filtering
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from smtplib import SMTP_SSL
@@ -106,33 +106,34 @@ class SurveyResultsView(viewsets.ModelViewSet):
             return obj
         return queryset
 
-class SurveyResults2View(viewsets.ModelViewSet):
-    queryset = SurveyResults2.objects.all()
-    serializer_class = SurveyResult2Serializer
+# 설문조사 결과
+# class SurveyResults2View(viewsets.ModelViewSet):
+#     queryset = SurveyResults2.objects.all()
+#     serializer_class = SurveyResult2Serializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        created_instance = serializer.save()
-        headers = self.get_success_headers(serializer.data)
-        return Response({'survey_id': created_instance.id}, status=200, headers=headers)
+#     def create(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         created_instance = serializer.save()
+#         headers = self.get_success_headers(serializer.data)
+#         return Response({'survey_id': created_instance.id}, status=200, headers=headers)
 
-    def get_queryset(self):
-        user_id = self.kwargs['userId'] if self.kwargs else None
-        if user_id:
-            return SurveyResults.objects.filter(user_id=user_id)
-        return super().get_queryset()
+#     def get_queryset(self):
+#         user_id = self.kwargs['userId'] if self.kwargs else None
+#         if user_id:
+#             return SurveyResults.objects.filter(user_id=user_id)
+#         return super().get_queryset()
 
-    def get_object(self):
-        pk = self.kwargs['pk'] if self.kwargs else None
-        queryset = self.filter_queryset(self.get_queryset())
-        if (len(queryset) > 0) and (self.request.query_params.get('surveyId')):
-            obj = queryset.get(pk=self.request.query_params.get('surveyId'))
-            return obj
-        if pk:
-            obj = queryset.get(pk=pk)
-            return obj
-        return queryset
+#     def get_object(self):
+#         pk = self.kwargs['pk'] if self.kwargs else None
+#         queryset = self.filter_queryset(self.get_queryset())
+#         if (len(queryset) > 0) and (self.request.query_params.get('surveyId')):
+#             obj = queryset.get(pk=self.request.query_params.get('surveyId'))
+#             return obj
+#         if pk:
+#             obj = queryset.get(pk=pk)
+#             return obj
+#         return queryset
 
 
 class QuestionnairesView(viewsets.ModelViewSet):
@@ -178,3 +179,13 @@ class UserBuyProductView(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save()
         return Response({'user_buy_product_id': created_instance.id}, status=200)
+        
+class UserClickProductView(viewsets.ModelViewSet):
+    queryset = UserClickProduct.objects.all()
+    serializer_class = UserClickProductSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        created_instance = serializer.save()
+        return Response({'user_click_product_id': created_instance.id}, status=200)
