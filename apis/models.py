@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib import admin
 
-
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -162,18 +161,6 @@ class SurveyResults(models.Model):
         db_table = 'survey_results'
 
 
-class SurveyResults2(models.Model):
-    survey_responses = models.CharField(max_length=5000, blank=True, null=True)
-    create_date = models.DateTimeField()
-    update_date = models.DateTimeField(blank=True, null=True)
-    user = models.ForeignKey('Users', models.DO_NOTHING)
-    questionnaire = models.ForeignKey(Questionnaires, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'survey_results_2'
-
-
 class Teas(models.Model):
     name = models.CharField(max_length=255)
     brand = models.CharField(max_length=255, blank=True, null=True)
@@ -181,10 +168,12 @@ class Teas(models.Model):
     flavor = models.CharField(max_length=255, blank=True, null=True)
     caffeine = models.CharField(max_length=45)
     efficacies = models.CharField(max_length=255, blank=True, null=True)
+    theme = models.CharField(max_length=255, blank=True, null=True)
     image_url = models.CharField(max_length=255, blank=True, null=True)
     site_url = models.CharField(max_length=255, blank=True, null=True)
     price = models.CharField(max_length=255, blank=True, null=True)
     stock = models.CharField(max_length=64, blank=True, null=True)
+    sell_count = models.PositiveIntegerField()
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
 
@@ -201,6 +190,26 @@ class UserBuyProduct(models.Model):
     class Meta:
         managed = False
         db_table = 'user_buy_product'
+
+
+class UserClickProduct(models.Model):
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    tea = models.ForeignKey(Teas, models.DO_NOTHING)
+    create_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'user_click_product'
+
+
+class UserWishProduct(models.Model):
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    tea = models.ForeignKey(Teas, models.DO_NOTHING)
+    create_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'user_wish_product'
 
 
 class Users(models.Model):
