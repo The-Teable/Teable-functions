@@ -6,9 +6,7 @@ import math
 import random
 import sklearn
 from nltk.corpus import stopwords
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse.linalg import svds
 from scipy.sparse import csr_matrix
 from scipy.stats import pearsonr
@@ -37,11 +35,13 @@ def get_filtering_tea(UserId, user_teatype, user_scent, user_effect, user_caff):
     Tea_df.loc[Tea_df['caffeine'] == 'X', 'caffeine'] = 'false' 
 
 
+    #interaction하는 df들을 모두 선언한다.
     recommend_test_result_df = myDB.recommend_test_result[['tea_id', 'user_id', 'interaction_type']] 
-    user_buy_df = myDB.user_buy_df[['tea_id', 'user_id', 'interaction_type']] 
+    user_buy_df = myDB.user_buy_df[['tea_id', 'user_id', 'interaction_type']]
+    user_click_df = myDB.user_click_df[['tea_id', 'user_id', 'interaction_type']]
 
     interaction_df = pd.DataFrame({'tea_id' : [], 'user_id' : [], 'interaction_type': []})
-    interaction_df = pd.concat([interaction_df, recommend_test_result_df, user_buy_df])
+    interaction_df = pd.concat([interaction_df, recommend_test_result_df, user_buy_df, user_click_df])
     interaction_df['user_id'] = (
         interaction_df
         .loc[:, 'user_id']
@@ -107,7 +107,7 @@ def get_filtering_tea(UserId, user_teatype, user_scent, user_effect, user_caff):
     pearson_similar_df = pd.DataFrame(list(pearson_similar.items()), columns=['user_id', 'similar']).sort_values('similar', ascending=False)
     similar_user_topn = pearson_similar_df[['user_id']].head(55)
 
-    # 본인 추가
+    # matrix update를 위해 유사도 이웃에 본인 추가
     similar_user_topn = list(similar_user_topn['user_id'])
 
     #유사도 topn에 들어가는 user가 아니면 pivot matrix에서 제거해준다.
@@ -116,12 +116,12 @@ def get_filtering_tea(UserId, user_teatype, user_scent, user_effect, user_caff):
     # interaction 데이터를 이웃 모델에 맞게 변경 해준다.
     interaction_full_df = interaction_full_df[(interaction_full_df['user_id'].isin(similar_user_topn)) | (interaction_full_df['user_id'] == UserId)]
 
-    # 평가와 같은 값나오는지 확인용
+    # recall 평가를 위한 데이터셋 나누기
     # interaction_train, interaction_test = train_test_split( 
     #     interaction_full_df,
     #     stratify=interaction_full_df['user_id'],
     #     test_size=0.2,
-    #     random_state=777 # 어떤수라도 상관없지만 같은 숫자여야 같은 값이 나옴.
+    #     random_state=777 # 어떤수라도 상관없지만 같은 숫자면 같은 내용으로 나눠진다.
     # )
 
 
@@ -228,7 +228,7 @@ def get_filtering_tea(UserId, user_teatype, user_scent, user_effect, user_caff):
 
     # myprofile_fla = user_profiles_fla[UserId].flatten().tolist() 
     # myprofile_eff = user_profiles_eff[UserId].flatten().tolist() 
-    # myprofile_caff = user_profiles_caff[UserId].flatten().tolist() 
+    # myprofile_caff = user_profiles_caff[UserId].flatten().tolist()
     # myprofile_type = user_profiles_type[UserId].flatten().tolist() 
 
     feature_type_list = ['flavor', 'efficacies', 'caffeine', 'type']
@@ -236,6 +236,7 @@ def get_filtering_tea(UserId, user_teatype, user_scent, user_effect, user_caff):
     tfidf_matrix_list = [tfidf_matrix_fla, tfidf_matrix_eff, tfidf_matrix_caff, tfidf_matrix_type]
 
     content_based_model = ContentBasedRecommender(item_ids, feature_type_list, user_profiles_list, tfidf_matrix_list, Tea_df)
+
 
     #hybrid filtering
     hybrid_recommender_model = HybridRecommender(content_based_model, cf_recommender_model, Tea_df)
