@@ -1,10 +1,12 @@
 # from django.shortcuts import render
 from datetime import datetime, timezone
+from email import header
 from django.http import HttpResponse
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
+from sqlalchemy import JSON
 from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, UserSerializer, UserBuyProductSerializer, UserClickProductSerializer
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, SurveyResults2, Teas, Users, UserBuyProduct, UserClickProduct
+from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct
 # import import_ipynb
 # import filtering_algorithm
 from .lib import common_filtering
@@ -187,5 +189,7 @@ class UserClickProductView(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        created_instance = serializer.save()
-        return Response({'user_click_product_id': created_instance.id}, status=200)
+        created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({'user_click_product_id': created_instance.id}, status=200, headers=headers)
