@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from rest_framework import serializers
 from rest_framework.response import Response
@@ -112,30 +113,25 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         return created_instance
 
 
+class ThemeFilteringSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teas
+        fields = ['theme']
+
 class UserBuyProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBuyProduct
-        fields = []
+        fields = ['user_id', 'tea_id']
 
     def create(self, validated_data):
-        query_params = self.context['request'].query_params
-        user_id = query_params.get('userId')
-        if (not user_id):
-            raise serializers.ValidationError('Params not provided enough')
-        filtering_result_product = FilteringResultProductMap.objects.filter(user_id=user_id)
-        if len(filtering_result_product) < 1:
-            raise serializers.ValidationError('There is no corresponding filtering result product')
-        for product in filtering_result_product:
-            create_instance = UserBuyProduct.objects.create(user_id = user_id, tea_id = product.tea_id, create_date = datetime.now())
-        return create_instance
+        validated_data['create_date'] = datetime.now()
+        return super().create(validated_data)
 
 class UserClickProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserClickProduct
-        fields = []
+        fields = ['user_id', 'tea_id']
 
     def create(self, validated_data):
-        user_id = validated_data['userId']
-        tea_id = validated_data['teaId']
-        if not user_id or not tea_id:
-            raise serializers.ValidationError('Validated Data not provided enough')
+        validated_data['create_date'] = datetime.now()
+        return super().create(validated_data)
