@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
 from sqlalchemy import JSON
-from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, UserSerializer, UserBuyProductSerializer, UserClickProductSerializer
+from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, ThemeFilteringSerializer, UserSerializer, UserBuyProductSerializer, UserClickProductSerializer
 from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct
 # import import_ipynb
 # import filtering_algorithm
@@ -18,6 +18,9 @@ from rest_framework import serializers
 import csv
 from django.core import serializers as djangoSerializers
 import json
+
+# 테마 필터링 알고리즘
+from .lib import theme_filtering
 
 # Create your views here.
 
@@ -172,6 +175,22 @@ class FilteringResultsView(viewsets.ModelViewSet):
         created_instance = serializer.save()
         return Response({'filtering_id': created_instance.id}, status=200)
 
+class ThemeFilteringView(viewsets.ModelViewSet):
+    queryset = Teas.objects.all()
+    serializer_class = ThemeFilteringSerializer
+
+    def list(self, request, *args, **kwargs):
+        theme = request.data['theme']
+        if theme:
+            theme_filtering_result_map = theme_filtering(theme)
+            teas = []
+            for result in theme_filtering_result_map:
+                tea_id = result.tea_id
+                tea = Teas.objects.get(id=tea_id)
+                teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
+                            'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
+            return Response(teas)
+
 class UserBuyProductView(viewsets.ModelViewSet):
     queryset = UserBuyProduct.objects.all()
     serializer_class = UserBuyProductSerializer
@@ -179,7 +198,7 @@ class UserBuyProductView(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        created_instance = serializer.save()
+        created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
         return Response({'user_buy_product_id': created_instance.id}, status=200)
         
 class UserClickProductView(viewsets.ModelViewSet):
