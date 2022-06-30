@@ -199,6 +199,9 @@ class UserBuyProductView(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
+        for tea_id in request.data['tea_id']:
+            tea = Teas.objects.get(id=tea_id)
+            Teas.objects.filter(id=tea_id).update(sell_count = tea.sell_count + 1)
         return Response({'user_buy_product_id': created_instance.id}, status=200)
         
 class UserClickProductView(viewsets.ModelViewSet):
