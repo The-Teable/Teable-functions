@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
 from sqlalchemy import JSON
-from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, ThemeFilteringSerializer, UserSerializer, UserBuyProductSerializer, UserClickProductSerializer
+from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, UserClickProductSerializer
 from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct
 # import import_ipynb
 # import filtering_algorithm
@@ -20,7 +20,7 @@ from django.core import serializers as djangoSerializers
 import json
 
 # 테마 필터링 알고리즘
-from .lib import theme_filtering
+from .lib import theme_filtering, bestselling_filtering
 
 # Create your views here.
 
@@ -180,7 +180,7 @@ class ThemeFilteringView(viewsets.ModelViewSet):
     serializer_class = ThemeFilteringSerializer
 
     def list(self, request, *args, **kwargs):
-        theme = request.data['theme']
+        theme = self.kwargs['theme'] if self.kwargs else None
         if theme:
             theme_filtering_result_map = theme_filtering(theme)
             teas = []
@@ -190,6 +190,20 @@ class ThemeFilteringView(viewsets.ModelViewSet):
                 teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
                             'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
             return Response(teas)
+
+class BestSellingView(viewsets.ModelViewSet):
+    queryset = Teas.objects.all()
+    serializer_class = BestSellingSerializer
+
+    def list(self, request, *args, **kwargs):
+        bestselling_filtering_result_map = bestselling_filtering()
+        teas = []
+        for result in bestselling_filtering_result_map:
+            tea_id = result.tea_id
+            tea = Teas.objects.get(id=tea_id)
+            teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
+                        'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
+        return Response(teas)
 
 class UserBuyProductView(viewsets.ModelViewSet):
     queryset = UserBuyProduct.objects.all()
