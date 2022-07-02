@@ -2,7 +2,7 @@ from django.urls import path, include
 from django.contrib import admin
 from django.urls.conf import re_path
 # from apis.views import send_email
-from .views import FilteringResultsView, QuestionnairesView, SendEmail, SurveyResultsView, UsersView, UserBuyProductView, UserClickProductView, ThemeFilteringView
+from .views import FilteringResultsView, QuestionnairesView, SendEmail, SurveyResultsView, UsersView, UserBuyProductView, UserClickProductView, ThemeFilteringView, BestSellingView
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
@@ -70,6 +70,10 @@ theme_filtering_list = ThemeFilteringView.as_view({
     'get': 'list'
 })
 
+bestselling_filtering_list = BestSellingView.as_view({
+    'get': 'list'
+})
+
 user_buy_product_create = UserBuyProductView.as_view({
     'post': 'create',
 })
@@ -111,7 +115,10 @@ urlpatterns = format_suffix_patterns([
     re_path('filtering-results/(?P<filteringId>.+)/$', filtering_results_detail, name='filtering_results_detail'),
 
     # theme_filtering
-    path('theme-filtering/', theme_filtering_list, name='theme_filtering_list'),
+    path('theme-filtering/(?P<theme>.+)/$', theme_filtering_list, name='theme_filtering_list'),
+
+    # bestselling_filtering
+    path('best-selling/', bestselling_filtering_list, name='bestselling_filtering_list'),
 
     # user_buy_product
     path('user-buy-product/new/', user_buy_product_create, name='user_buy_product_create'),
