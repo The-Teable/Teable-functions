@@ -116,7 +116,12 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
 class ThemeFilteringSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teas
-        fields = ['theme']
+        fields = []
+
+class BestSellingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teas
+        fields = []
 
 class UserBuyProductSerializer(serializers.ModelSerializer):
     class Meta:
