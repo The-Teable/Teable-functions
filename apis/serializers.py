@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from rest_framework import serializers
 from rest_framework.response import Response
@@ -95,8 +95,8 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         tea_flavor = survey_response['flavor']
         tea_expect = survey_response['expect']
         tea_caffeine = survey_response['caffeine']
-        # algorithm_result_str = common_filtering.tea_filtering(''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
-        algorithm_result_str = teave_filtering.get_filtering_tea(user_id, ''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
+        algorithm_result_str = common_filtering.tea_filtering(''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
+        # algorithm_result_str = teave_filtering.get_filtering_tea(user_id, ''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
         algorithm_result_json = json.loads(algorithm_result_str)
         validated_data['user_id'] = user_id
         validated_data['survey_result_id'] = survey_result[0].id
@@ -112,6 +112,10 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
             FilteringResultProductMap.objects.create(filtering_result_id=filtering_result_id, tea_id=tea_db[0].id, create_date=datetime.now(), user_id=user_id)
         return created_instance
 
+class MainFilteringResultsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teas
+        fields = []
 
 class ThemeFilteringSerializer(serializers.ModelSerializer):
     class Meta:
