@@ -2,7 +2,7 @@ from django.urls import path, include
 from django.contrib import admin
 from django.urls.conf import re_path
 # from apis.views import send_email
-from .views import FilteringResultsView, QuestionnairesView, SendEmail, SurveyResultsView, UsersView, UserBuyProductView, UserClickProductView, ThemeFilteringView, BestSellingView
+from .views import FilteringResultsView, MainFilteringResultView, QuestionnairesView, SendEmail, SurveyResultsView, UsersView, UserBuyProductView, UserClickProductView, ThemeFilteringView, BestSellingView
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
@@ -66,6 +66,10 @@ filtering_results_detail = FilteringResultsView.as_view({
     'get': 'list'
 })
 
+main_filtering_results_list = MainFilteringResultView.as_view({
+    'get': 'list'
+})
+
 theme_filtering_list = ThemeFilteringView.as_view({
     'get': 'list'
 })
@@ -113,6 +117,9 @@ urlpatterns = format_suffix_patterns([
     # filtering_results
     path('filtering-results/new/', filtering_results_list, name='filtering_results_list'),
     re_path('filtering-results/(?P<filteringId>.+)/$', filtering_results_detail, name='filtering_results_detail'),
+
+    # main_filtering_results
+    path('main-filtering-results/(?P<user_id>.+)/$',main_filtering_results_list, name='main_filtering_results_list'),
 
     # theme_filtering
     path('theme-filtering/(?P<theme>.+)/$', theme_filtering_list, name='theme_filtering_list'),
