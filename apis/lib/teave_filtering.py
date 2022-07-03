@@ -31,8 +31,10 @@ def get_filtering_tea(UserId, user_teatype, user_scent, user_effect, user_caff):
     User_df = myDB.users
     UserAge = int(User_df[User_df['id'] == UserId].age)
     Tea_df = myDB.teas
-    Tea_df.loc[Tea_df['caffeine'] == 'O', 'caffeine'] = 'true' 
-    Tea_df.loc[Tea_df['caffeine'] == 'X', 'caffeine'] = 'false' 
+    Tea_df.caffeine.replace(
+        ['O', 'X'],
+        ['true', 'false'], inplace=True
+    )
 
 
     #interaction하는 df들을 모두 선언한다.
