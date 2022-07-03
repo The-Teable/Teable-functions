@@ -18,15 +18,17 @@ from .ConnectDB import MYSQLDB
 
 # filtering algorithm model
 from .RecommendModel import CFRecommender, ContentBasedRecommender, HybridRecommender
-from . import common_filtering
 
-def get_filtering_tea(UserId, user_teatype, user_scent, user_effect, user_caff):
+def get_filtering_tea(UserId):
     myDB = MYSQLDB()
+
     # UserId = int(UserId)
     UserId = 1822
-    # 만약 신규유저라면 common filtering 수행
-    if (UserId not in list(myDB.test_boolean['user_id'])):
-        return (common_filtering.tea_filtering(user_teatype, user_scent, user_effect, user_caff))
+
+    # 만약 신규유저라면 common filtering 수행 -> common 과 hybrid 분리
+    # if (UserId not in list(myDB.test_boolean['user_id'])):
+    #     return (common_filtering.tea_filtering(user_teatype, user_scent, user_effect, user_caff))
+
     # 변수선언
     User_df = myDB.users
     UserAge = int(User_df[User_df['id'] == UserId].age)
@@ -243,7 +245,7 @@ def get_filtering_tea(UserId, user_teatype, user_scent, user_effect, user_caff):
     #hybrid filtering
     hybrid_recommender_model = HybridRecommender(content_based_model, cf_recommender_model, Tea_df)
     # print(hybrid_recommender_model.recommend_items( UserId, topn=10, verbose=False))
-    hybrid_recommend_tea = hybrid_recommender_model.recommend_items( UserId, topn=10, verbose=False)[['tea_id']]
+    hybrid_recommend_tea = hybrid_recommender_model.recommend_items( UserId, topn=3, verbose=False)[['tea_id']]
     hybrid_recommend_tea['tea_name'] = ( 
         hybrid_recommend_tea
         .loc[:, 'tea_id']
