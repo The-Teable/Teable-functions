@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
 from sqlalchemy import JSON
-from apis.serializers import FilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, UserClickProductSerializer
+from apis.serializers import FilteringResultsSerializer, MainFilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, UserClickProductSerializer
 from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct
 # import import_ipynb
 # import filtering_algorithm
@@ -20,7 +20,7 @@ from django.core import serializers as djangoSerializers
 import json
 
 # 테마 필터링 알고리즘
-from .lib import theme_filtering, bestselling_filtering
+from .lib import theme_filtering, bestselling_filtering, teave_filtering
 
 # Create your views here.
 
@@ -151,7 +151,7 @@ class QuestionnairesView(viewsets.ModelViewSet):
             return Questionnaires.objects.filter(version=version)
         return super().get_queryset()
 
-
+# tea Test 결과
 class FilteringResultsView(viewsets.ModelViewSet):
     queryset = FilteringResults.objects.all()
     serializer_class = FilteringResultsSerializer
@@ -174,6 +174,23 @@ class FilteringResultsView(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save()
         return Response({'filtering_id': created_instance.id}, status=200)
+
+# 메인페이지에서 보여주는 Tea 추천 결과
+class MainFilteringResultView(viewsets.ModelViewSet):
+    queryset = Teas.objects.all()
+    serializer_class = MainFilteringResultsSerializer
+
+    def list(self, request, *args, **kwargs):
+        user_id = self.kwargs['user_id'] if self.kwargs else None
+        if user_id:
+            teave_filtering_result_map = teave_filtering(user_id)
+            teas = []
+            for result in teave_filtering_result_map:
+                tea_id = result.tea_id
+                tea = Teas.objects.get(id=tea_id)
+                teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
+                            'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
+            return Response(teas)
 
 class ThemeFilteringView(viewsets.ModelViewSet):
     queryset = Teas.objects.all()
