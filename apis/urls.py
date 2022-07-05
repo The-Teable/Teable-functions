@@ -2,8 +2,21 @@ from django.urls import path, include
 from django.contrib import admin
 from django.urls.conf import re_path
 # from apis.views import send_email
-from .views import FilteringResultsView, MainFilteringResultView, QuestionnairesView, SendEmail, SurveyResultsView, UsersView, UserBuyProductView, UserClickProductView, ThemeFilteringView, BestSellingView
+from .views import (
+    FilteringResultsView, MainFilteringResultView, 
+    QuestionnairesView, SendEmail, 
+    SurveyResultsView, UsersView, 
+    UserBuyProductView, UserClickProductView, 
+    ThemeFilteringView, BestSellingView,
+    #auth
+    MyTokenObtainPairView, RegisterView
+    )
 from rest_framework.urlpatterns import format_suffix_patterns
+
+# django auth
+from rest_framework_simplejwt.views import (
+    TokenRefreshView,
+)
 
 from . import views
 
@@ -89,6 +102,13 @@ user_click_product_create = UserClickProductView.as_view({
 send_email_list = SendEmail.as_view()
 
 urlpatterns = format_suffix_patterns([
+
+    #auth
+    path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('register/', views.RegisterView.as_view(), name='auth_register'),
+    path('', views.getRoutes),
+
     path('', views.index),
     # path('auth/', include('rest_framework.urls', namespace='rest_framework')),
 
