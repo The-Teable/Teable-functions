@@ -1,30 +1,42 @@
 # from django.shortcuts import render
 from datetime import datetime, timezone
 from email import header
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
 from sqlalchemy import JSON
-from apis.serializers import FilteringResultsSerializer, MainFilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, UserClickProductSerializer
+from apis.serializers import (
+    MyTokenObtainPairSerializer, RegisterSerializer,
+    FilteringResultsSerializer, MainFilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, 
+    ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, 
+    UserClickProductSerializer
+)
 from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct
 # import import_ipynb
 # import filtering_algorithm
 from .lib import common_filtering
 from rest_framework.views import APIView
-from rest_framework import viewsets
+from rest_framework import viewsets, generics, serializers
 from smtplib import SMTP_SSL
 from email.mime.text import MIMEText
-from rest_framework import serializers
 import csv
 from django.core import serializers as djangoSerializers
 import json
+
+# django auth
+from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth.models import User
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
 
 # 테마 필터링 알고리즘
 from .lib import theme_filtering, bestselling_filtering, teave_filtering
 
 # Create your views here.
 
-
+# send email
 class SendEmail(APIView):
     def get(self, serializer):
         return Response("이메일 전송 API", status=200)
@@ -60,6 +72,15 @@ class SendEmail(APIView):
 
 def index(request):
     return HttpResponse("hello, we are pirates")
+
+# django auth
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
 
 
 class UsersView(viewsets.ModelViewSet):
