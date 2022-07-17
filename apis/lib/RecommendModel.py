@@ -50,7 +50,13 @@ class ContentBasedRecommender:
             else:
                 recommendations = pd.merge(recommendations, pd.DataFrame(similar_items_filtered, columns=['tea_id', 'recStrength_{0}'.format(feature_type)]).head(topn), on="tea_id", how="outer")
         recommendations.fillna(0)
-        recommendations['recStrength_efficacies'] /= 2
+
+        # custom recommend recstrength
+        recommendations['recStrength_efficacies'] *= 0.15
+        recommendations['recStrength_caffeine'] *= 0.4
+        recommendations['recStrength_flavor'] *= 0.25
+        recommendations['recStrength_type'] *= 0.2
+
         # divid number is len(self.user_profiles_list), not len(~) + 1
         value = (recommendations.drop(['tea_id'], axis=1).sum(axis=1)) / (len(self.user_profiles_list))
         recommendations['recStrength'] = value
