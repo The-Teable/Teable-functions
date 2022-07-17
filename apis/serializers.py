@@ -15,30 +15,31 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 #auth serializer
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-
     def get_token(cls, user):
         token = super().get_token(user)
         # Add custom claims
+        token['userid'] = user.id
         token['username'] = user.username
         token['email'] = user.email
+        token['tel'] = user.tel
         # ...
         return token
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
+    # password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'password2')
+        fields = ('username', 'password',)
 
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError(
-                {"password": "Password fields didn't match."})
+    # def validate(self, attrs):
+    #     if attrs['password'] != attrs['password2']:
+    #         raise serializers.ValidationError(
+    #             {"password": "Password fields didn't match."})
 
-        return attrs
+    #     return attrs
 
     def create(self, validated_data):
         user = User.objects.create(
