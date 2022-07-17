@@ -134,7 +134,7 @@ class HybridRecommender:
         # 3) Hybrid 점수를 기준으로 정렬한다
         recommendations = (cb_recs
             .merge(cf_recs, how='inner', left_on='tea_id', right_on='tea_id')
-            .assign(recStrengthHybrid = lambda d: d['recStrengthCB'] * d['recStrengthCF'])
+            .assign(recStrengthHybrid = lambda d: (0.6 * d['recStrengthCB']) + (0.4 *d['recStrengthCF']))
             .sort_values('recStrengthHybrid', ascending=False)
             .head(topn)
         )
