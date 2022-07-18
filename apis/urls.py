@@ -20,6 +20,12 @@ from rest_framework_simplejwt.views import (
 
 from . import views
 
+# sign up
+signup_check = views.SignUpView.as_view({
+    'get': 'check_duplicate',
+})
+
+
 users_list = UsersView.as_view({
     'post': 'create',
 })
@@ -103,12 +109,14 @@ send_email_list = SendEmail.as_view()
 
 urlpatterns = format_suffix_patterns([
 
-    #auth
+    # auth token
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('register/', views.RegisterView.as_view(), name='auth_register'),
-    path('', views.getRoutes),
 
+    # auth signup
+    path('signup/', views.SignUpView.as_view(), name='auth_signup'),
+    path('signup/check/', signup_check, name = 'signup_check'),
+    path('', views.getRoutes),
     path('', views.index),
     # path('auth/', include('rest_framework.urls', namespace='rest_framework')),
 
