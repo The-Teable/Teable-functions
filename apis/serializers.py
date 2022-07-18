@@ -25,30 +25,25 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # ...
         return token
 
-class RegisterSerializer(serializers.ModelSerializer):
+class SignUpSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True, required=True, validators=[validate_password])
+    # password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
         fields = ['id', 'password', 'name', 'email', 'tel', 'address', 'birth', 'gender']
 
-    password = serializers.CharField(
-        write_only=True, required=True, validators=[validate_password])
-    # password2 = serializers.CharField(write_only=True, required=True)
-
-    def validate(self, attrs):
-        # password match check
-        # if attrs['password'] != attrs['password2']:
-        #     raise serializers.ValidationError(
-        #         {"password": "Password fields didn't match."})
-        
-        # id duplicate check
-        if User.object.filter(id = attrs['id']).exists():
-            raise serializers.ValidationError({"id": "중복된 아이디 입니다."})
-        return attrs
-
     def create(self, validated_data):
         user = User.objects.create(
-            name=validated_data['name']
+            id=validated_data['id'],
+            name=validated_data['name'],
+            email=validated_data['email'],
+            tel=validated_data['tel'],
+            address=validated_data['address'],
+            birth=validated_data['birth'],
+            gender=validated_data['gender'],
+            create_date = datetime.now(),
         )
 
         user.set_password(validated_data['password'])
