@@ -11,39 +11,44 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueValidator
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 #auth serializer
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+
     def get_token(cls, user):
         token = super().get_token(user)
         # Add custom claims
         token['userid'] = user.id
-        token['username'] = user.username
+        token['name'] = user.name
         token['email'] = user.email
         token['tel'] = user.tel
         # ...
         return token
 
 class RegisterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'password', 'name', 'email', 'tel', 'address', 'birth', 'gender']
+
     password = serializers.CharField(
         write_only=True, required=True, validators=[validate_password])
     # password2 = serializers.CharField(write_only=True, required=True)
 
-    class Meta:
-        model = User
-        fields = ('username', 'password',)
-
-    # def validate(self, attrs):
-    #     if attrs['password'] != attrs['password2']:
-    #         raise serializers.ValidationError(
-    #             {"password": "Password fields didn't match."})
-
-    #     return attrs
+    def validate(self, attrs):
+        # password match check
+        # if attrs['password'] != attrs['password2']:
+        #     raise serializers.ValidationError(
+        #         {"password": "Password fields didn't match."})
+        
+        # id duplicate check
+        if User.object.filter(id = attrs['id']).exists():
+            raise serializers.ValidationError({"id": "중복된 아이디 입니다."})
+        return attrs
 
     def create(self, validated_data):
         user = User.objects.create(
-            username=validated_data['username']
+            name=validated_data['name']
         )
 
         user.set_password(validated_data['password'])
