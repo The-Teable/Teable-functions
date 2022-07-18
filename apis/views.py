@@ -1,12 +1,13 @@
 # from django.shortcuts import render
 from datetime import datetime, timezone
 from email import header
+from urllib import response
 from django.http import HttpResponse, JsonResponse
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
-from sqlalchemy import JSON
+from sqlalchemy import JSON, false
 from apis.serializers import (
-    MyTokenObtainPairSerializer, RegisterSerializer,
+    MyTokenObtainPairSerializer, SignUpSerializer,
     FilteringResultsSerializer, MainFilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, 
     ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, 
     UserClickProductSerializer
@@ -77,10 +78,18 @@ def index(request):
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
-class RegisterView(generics.CreateAPIView):
+class SignUpView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
-    serializer_class = RegisterSerializer
+    serializer_class = SignUpSerializer
+
+    # id duplicate check
+    def check_duplicate(self, request):
+        is_duplicate = False
+        if User.object.filter(id = request['id']).exists():
+            is_duplicate = True
+            raise serializers.ValidationError({"id": "중복된 아이디 입니다."})
+        return Response(is_duplicate)
 
 
 class UsersView(viewsets.ModelViewSet):
