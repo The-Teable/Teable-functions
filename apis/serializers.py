@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from rest_framework import serializers
 from rest_framework.response import Response
+from sqlalchemy import null
 from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, UserBuyProduct, UserClickProduct
 from .lib import common_filtering, teave_filtering
 import json
@@ -35,20 +36,26 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = ['id', 'password', 'name', 'email', 'tel', 'address', 'birth', 'gender']
 
     def create(self, validated_data):
+        try:
+            validated_data['age'] = datetime.today().year - int(validated_data['birth'].split("-")[0]) + 1
+        except:
+            validated_data['birth'], validated_data['age'] = null
+
         user = User.objects.create(
             id=validated_data['id'],
             name=validated_data['name'],
             email=validated_data['email'],
             tel=validated_data['tel'],
             address=validated_data['address'],
-            birth=validated_data['birth'],
-            gender=validated_data['gender'],
+            age=validated_data['age'],
+            birth = validated_data['birth'],
+            gender = validated_data['gender'],
             create_date = datetime.now(),
         )
 
         user.set_password(validated_data['password'])
         user.save()
-
+        
         return user
 
 
