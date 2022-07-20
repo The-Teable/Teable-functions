@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib import admin
 
+
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -213,8 +214,10 @@ class UserWishProduct(models.Model):
 
 
 class Users(models.Model):
+    password = models.CharField(max_length=128)
     name = models.CharField(max_length=255)
     age = models.PositiveIntegerField(blank=True, null=True)
+    birth = models.CharField(max_length=255, blank=True, null=True)
     gender = models.CharField(max_length=255, blank=True, null=True)
     email = models.CharField(max_length=255, blank=True, null=True)
     tel = models.CharField(max_length=255, blank=True, null=True)
