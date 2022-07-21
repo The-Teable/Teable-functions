@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from rest_framework import serializers
 from rest_framework.response import Response
+from django.contrib.auth.hashers import make_password
 from sqlalchemy import null
 from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, UserBuyProduct, UserClickProduct
 from .lib import common_filtering, teave_filtering
@@ -9,6 +10,8 @@ import json
 
 #django auth
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueValidator
@@ -19,7 +22,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         # Add custom claims
-        token['userid'] = user.id
+        token['user_id'] = user.user_id
         token['name'] = user.name
         token['email'] = user.email
         token['tel'] = user.tel
@@ -32,32 +35,44 @@ class SignUpSerializer(serializers.ModelSerializer):
     # password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
-        model = User
-        fields = ['id', 'password', 'name', 'email', 'tel', 'address', 'birth', 'gender']
+        model = Users
+        fields = ['user_id', 'password', 'name', 'email', 'tel', 'address', 'birth', 'gender']
 
     def create(self, validated_data):
         try:
             validated_data['age'] = datetime.today().year - int(validated_data['birth'].split("-")[0]) + 1
         except:
-            validated_data['birth'], validated_data['age'] = null
-
-        user = User.objects.create(
-            id=validated_data['id'],
-            name=validated_data['name'],
-            email=validated_data['email'],
-            tel=validated_data['tel'],
-            address=validated_data['address'],
-            age=validated_data['age'],
-            birth = validated_data['birth'],
-            gender = validated_data['gender'],
-            create_date = datetime.now(),
-        )
-
-        user.set_password(validated_data['password'])
-        user.save()
+            pass
+        validated_data['password'] = make_password(validated_data['password'])
+        validated_data['create_date'] = datetime.now()
         
-        return user
+        return super().create(validated_data)
 
+class LogInSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['user_id', 'password']
+
+    def validate(self, data):
+        user_id = data.get('user_id', None)
+        password = data.get('password', None)
+        if Users.objects.filter(user_id = user_id).exists():
+            user = Users.objects.get(user_id=user_id)
+
+            if not user.check_password(password):
+                raise serializers.ValidationError("wrong password")
+        else:
+            raise serializers.ValidationError("wrong user_id")
+
+        token = RefreshToken.for_user(user)
+        refresh = str(token)
+        access = str(token.access_token)
+        data = {
+            'user' : user,
+            'refresh' : refresh,
+            'access' : access,
+        }
+        return data
 
 class TeaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -78,7 +93,7 @@ class SurveyResultSerializer(serializers.ModelSerializer):
         fields = ['survey_responses']
     def create(self, validated_data):
         query_params = self.context['request'].query_params
-        user_id = query_params.get('userId')
+        user_id = query_params.get('user_id')
         version = query_params.get('version')
         print(user_id, version, not(version), not(user_id))
         if (not user_id) or (not version):
@@ -103,7 +118,7 @@ class SurveyResultSerializer(serializers.ModelSerializer):
 #         fields = ['survey_responses']
 #     def create(self, validated_data):
 #         query_params = self.context['request'].query_params
-#         user_id = query_params.get('userId')
+#         user_id = query_params.get('user_id')
 #         version = query_params.get('version')
 #         print(user_id, version, not(version), not(user_id))
 #         if (not user_id) or (not version):
@@ -133,7 +148,7 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         query_params = self.context['request'].query_params
-        user_id = query_params.get('userId')
+        user_id = query_params.get('user_id')
         survey_id = query_params.get('surveyId')
         print(user_id, survey_id, not(survey_id), not(user_id))
         if not survey_id or not user_id:
