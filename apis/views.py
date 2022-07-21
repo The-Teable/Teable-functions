@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
 from sqlalchemy import JSON, false
 from apis.serializers import (
-    MyTokenObtainPairSerializer, SignUpSerializer,
+    MyTokenObtainPairSerializer, SignUpSerializer, LogInSerializer,
     FilteringResultsSerializer, MainFilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, 
     ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, 
     UserClickProductSerializer
@@ -28,7 +28,7 @@ import json
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
@@ -77,20 +77,43 @@ def index(request):
 # django auth
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-
-class SignUpView(generics.CreateAPIView):
-    queryset = User.objects.all()
+    
+class SignUpView(viewsets.ModelViewSet):
+    queryset = Users.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = SignUpSerializer
 
     # id duplicate check
-    def check_duplicate(self, request):
+    def check(self, request, *args, **kwargs):
         is_duplicate = False
-        if User.object.filter(id = request['id']).exists():
-            is_duplicate = True
-            raise serializers.ValidationError({"id": "중복된 아이디 입니다."})
-        return Response(is_duplicate)
+        user_id = request.GET['user_id']
+        if user_id:
+            if Users.objects.filter(user_id = user_id).exists():
+                is_duplicate = True
+            return Response({'is_duplicate' : is_duplicate}, status=200)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(status=201, headers=headers)
+
+class LogInView(viewsets.ModelViewSet):
+    serializer_class = LogInSerializer
+
+    def Login(self, request):
+        serializer = self.serializer_class(data = request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.validated_data['user']
+            access = serializer.validated_data['access']
+            refresh = serializer.validated_data['refresh']
+            print(user)
+            return JsonResponse({
+                'user' : user,
+                'refresh' : refresh,
+                'access' : access,
+            })
 
 class UsersView(viewsets.ModelViewSet):
     queryset = Users.objects.all()
@@ -105,7 +128,7 @@ class UsersView(viewsets.ModelViewSet):
         return Response({'user_id': created_instance.id}, status=200, headers=headers)
 
     def get_object(self):
-        pk = self.kwargs['userId'] if self.kwargs else None
+        pk = self.kwargs['user_id'] if self.kwargs else None
         queryset = self.filter_queryset(self.get_queryset())
         if pk:
             obj = queryset.get(pk=pk)
@@ -125,7 +148,7 @@ class SurveyResultsView(viewsets.ModelViewSet):
         return Response({'survey_id': created_instance.id}, status=200, headers=headers)
 
     def get_queryset(self):
-        user_id = self.kwargs['userId'] if self.kwargs else None
+        user_id = self.kwargs['user_id'] if self.kwargs else None
         if user_id:
             return SurveyResults.objects.filter(user_id=user_id)
         return super().get_queryset()
@@ -154,7 +177,7 @@ class SurveyResultsView(viewsets.ModelViewSet):
 #         return Response({'survey_id': created_instance.id}, status=200, headers=headers)
 
 #     def get_queryset(self):
-#         user_id = self.kwargs['userId'] if self.kwargs else None
+#         user_id = self.kwargs['user_id'] if self.kwargs else None
 #         if user_id:
 #             return SurveyResults.objects.filter(user_id=user_id)
 #         return super().get_queryset()
