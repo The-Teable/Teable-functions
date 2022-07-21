@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib import admin
+from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.base_user import AbstractBaseUser
 
+# manager
+from .managers import UserManager
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
@@ -213,7 +217,8 @@ class UserWishProduct(models.Model):
         db_table = 'user_wish_product'
 
 
-class Users(models.Model):
+class Users(AbstractBaseUser, PermissionsMixin):
+    user_id = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=128)
     name = models.CharField(max_length=255)
     age = models.PositiveIntegerField(blank=True, null=True)
@@ -224,13 +229,20 @@ class Users(models.Model):
     address = models.CharField(max_length=255, blank=True, null=True)
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
+    last_login = models.DateTimeField(blank=True, null=True)
+    is_superuser = models.IntegerField(default=0)
+
+    USERNAME_FIELD = 'user_id'    
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
 
     class Meta:
         managed = False
         db_table = 'users'
 
-# admin customizing
 
+# admin customizing
 
 class TeasAdmin(admin.ModelAdmin):
     list_display = ['id', 'brand', 'name', 'price', 'stock']
