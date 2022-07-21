@@ -9,26 +9,29 @@ from .views import (
     UserBuyProductView, UserClickProductView, 
     ThemeFilteringView, BestSellingView,
     #auth
-    MyTokenObtainPairView, RegisterView
+    MyTokenObtainPairView, SignUpView, LogInView
     )
 from rest_framework.urlpatterns import format_suffix_patterns
 
 # django auth
 from rest_framework_simplejwt.views import (
-    TokenRefreshView,
+    TokenRefreshView, TokenVerifyView
 )
 
 from . import views
 
 # sign up
-signup_check = views.SignUpView.as_view({
-    'get': 'check_duplicate',
+signup_check = SignUpView.as_view({
+    'get': 'check',
 })
 
-signup_create = views.SignUpView.as_view({
+signup_create = SignUpView.as_view({
     'post': 'create',
 })
 
+login = LogInView.as_view({
+    'post' : 'Login',
+})
 
 users_list = UsersView.as_view({
     'post': 'create',
@@ -81,11 +84,11 @@ questionnaires_list = QuestionnairesView.as_view({
     'get': 'list'
 })
 
-filtering_results_list = FilteringResultsView.as_view({
+filtering_results_detail = FilteringResultsView.as_view({
     'post': 'create',
 })
 
-filtering_results_detail = FilteringResultsView.as_view({
+filtering_results_list = FilteringResultsView.as_view({
     'get': 'list'
 })
 
@@ -113,31 +116,38 @@ send_email_list = SendEmail.as_view()
 
 urlpatterns = format_suffix_patterns([
 
-    # auth login
-    path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # main
+    path('', views.index, name = 'main'),
+
+    # auth token
+    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+
+    # auth login
+    path('login/', login, name='login'),
 
     # auth signup
-    path('signup/', signup_create, name='auth_signup'),
+    path('signup/', signup_create, name='signup_create'),
     path('signup/check/', signup_check, name = 'signup_check'),
-    path('', views.getRoutes),
-    path('', views.index),
+    re_path('signup/check/(?P<user_id>.+)/$', signup_check, name = 'signup_check'),
+
     # path('auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     # users
     path('users/new/', users_list, name='users_list'),
-    re_path('users/(?P<userId>.+)/$', users_detail, name="users_detail"),
+    re_path('users/(?P<user_id>.+)/$', users_detail, name="users_detail"),
     
     # survey_results
     path('survey-results/all/', survey_results_per_user, name='survey_results_per_user'),
-    re_path('survey-results/all/(?P<userId>.+)/$', survey_results_per_user, name='survey_results_per_user'),
+    re_path('survey-results/all/(?P<user_id>.+)/$', survey_results_per_user, name='survey_results_per_user'),
     path('survey-results/<int:pk>/', survey_results_detail, name='survey_results_list'),
     path('survey-results/new/', survey_results_create, name='survey_results_create'),
     path('survey-results/update/', survey_results_update, name='survey_results_update'),
 
     # survey_results_2
     # path('survey-results-2/all/', survey_results_2_per_user, name='survey_results_2_per_user'),
-    # re_path('survey-results-2/all/(?P<userId>.+)/$', survey_results_2_per_user, name='survey_results_2_per_user'),
+    # re_path('survey-results-2/all/(?P<user_id>.+)/$', survey_results_2_per_user, name='survey_results_2_per_user'),
     # path('survey-results-2/<int:pk>/', survey_results_2_detail, name='survey_results_2_list'),
     # path('survey-results-2/new/', survey_results_2_create, name='survey_results_2_create'),
     # path('survey-results-2/update/', survey_results_2_update, name='survey_results_2_update'),
@@ -147,14 +157,14 @@ urlpatterns = format_suffix_patterns([
     re_path('^questionnaires/(?P<version>.+)/$', questionnaires_list, name='questionnaires_list'),
 
     # filtering_results
-    path('filtering-results/new/', filtering_results_list, name='filtering_results_list'),
-    re_path('filtering-results/(?P<filteringId>.+)/$', filtering_results_detail, name='filtering_results_detail'),
+    path('filtering-results/new/', filtering_results_detail, name='filtering_results_detail'),
+    re_path('filtering-results/(?P<filteringId>.+)/$', filtering_results_list, name='filtering_results_list'),
 
     # main_filtering_results
-    path('main-filtering-results/(?P<user_id>.+)/$',main_filtering_results_list, name='main_filtering_results_list'),
+    re_path('main-filtering-results/(?P<user_id>.+)/$',main_filtering_results_list, name='main_filtering_results_list'),
 
     # theme_filtering
-    path('theme-filtering/(?P<theme>.+)/$', theme_filtering_list, name='theme_filtering_list'),
+    re_path('theme-filtering/(?P<theme>.+)/$', theme_filtering_list, name='theme_filtering_list'),
 
     # bestselling_filtering
     path('best-selling/', bestselling_filtering_list, name='bestselling_filtering_list'),
