@@ -19,19 +19,19 @@ from .ConnectDB import MYSQLDB
 # filtering algorithm model
 from .RecommendModel import CFRecommender, ContentBasedRecommender, HybridRecommender
 
-def get_filtering_tea(UserId):
+def get_filtering_tea(user_id):
     myDB = MYSQLDB()
 
-    # UserId = int(UserId)
-    UserId = 1822
+    # user_id = int(user_id)
+    user_id = 1822
 
     # 만약 신규유저라면 common filtering 수행 -> common 과 hybrid 분리
-    # if (UserId not in list(myDB.test_boolean['user_id'])):
+    # if (user_id not in list(myDB.test_boolean['user_id'])):
     #     return (common_filtering.tea_filtering(user_teatype, user_scent, user_effect, user_caff))
 
     # 변수선언
     User_df = myDB.users
-    UserAge = int(User_df[User_df['id'] == UserId].age)
+    UserAge = int(User_df[User_df['id'] == user_id].age)
     Tea_df = myDB.teas
     Tea_df.caffeine.replace(
         ['O', 'X'],
@@ -105,8 +105,8 @@ def get_filtering_tea(UserId):
     # print(users_items_pivot_df.index)
     pearson_similar = {}
     for i in range(len(users_items_pivot_df.index)):
-        if users_items_pivot_df.index[i] != UserId:
-            pearson_similar[users_items_pivot_df.index[i]] = pearsonr(users_items_pivot_df.loc[UserId], users_items_pivot_df.iloc[i])[0]
+        if users_items_pivot_df.index[i] != user_id:
+            pearson_similar[users_items_pivot_df.index[i]] = pearsonr(users_items_pivot_df.loc[user_id], users_items_pivot_df.iloc[i])[0]
 
     pearson_similar_df = pd.DataFrame(list(pearson_similar.items()), columns=['user_id', 'similar']).sort_values('similar', ascending=False)
     similar_user_topn = pearson_similar_df[['user_id']].head(55)
@@ -115,10 +115,10 @@ def get_filtering_tea(UserId):
     similar_user_topn = list(similar_user_topn['user_id'])
 
     #유사도 topn에 들어가는 user가 아니면 pivot matrix에서 제거해준다.
-    similar_users_items_pivot_df = users_items_pivot_df[((users_items_pivot_df.index.isin(similar_user_topn)) | (users_items_pivot_df.index == UserId))]
+    similar_users_items_pivot_df = users_items_pivot_df[((users_items_pivot_df.index.isin(similar_user_topn)) | (users_items_pivot_df.index == user_id))]
 
     # interaction 데이터를 이웃 모델에 맞게 변경 해준다.
-    interaction_full_df = interaction_full_df[(interaction_full_df['user_id'].isin(similar_user_topn)) | (interaction_full_df['user_id'] == UserId)]
+    interaction_full_df = interaction_full_df[(interaction_full_df['user_id'].isin(similar_user_topn)) | (interaction_full_df['user_id'] == user_id)]
 
     # recall 평가를 위한 데이터셋 나누기
     # interaction_train, interaction_test = train_test_split( 
@@ -154,7 +154,7 @@ def get_filtering_tea(UserId):
     )
 
     cf_recommender_model = CFRecommender(cf_preds_df, Tea_df)
-    # print(cf_recommender_model.recommend_items(UserId, topn=10, verbose=False))
+    # print(cf_recommender_model.recommend_items(user_id, topn=10, verbose=False))
 
     # content_based_filtering
     nltk.download('stopwords') 
@@ -230,10 +230,10 @@ def get_filtering_tea(UserId):
     user_profiles_caff = build_user_profiles('caffeine') 
     user_profiles_type = build_user_profiles('type')
 
-    # myprofile_fla = user_profiles_fla[UserId].flatten().tolist() 
-    # myprofile_eff = user_profiles_eff[UserId].flatten().tolist() 
-    # myprofile_caff = user_profiles_caff[UserId].flatten().tolist()
-    # myprofile_type = user_profiles_type[UserId].flatten().tolist() 
+    # myprofile_fla = user_profiles_fla[user_id].flatten().tolist() 
+    # myprofile_eff = user_profiles_eff[user_id].flatten().tolist() 
+    # myprofile_caff = user_profiles_caff[user_id].flatten().tolist()
+    # myprofile_type = user_profiles_type[user_id].flatten().tolist() 
 
     feature_type_list = ['flavor', 'efficacies', 'caffeine', 'type']
     user_profiles_list = [user_profiles_fla, user_profiles_eff, user_profiles_caff, user_profiles_type]
@@ -244,8 +244,8 @@ def get_filtering_tea(UserId):
 
     #hybrid filtering
     hybrid_recommender_model = HybridRecommender(content_based_model, cf_recommender_model, Tea_df)
-    # print(hybrid_recommender_model.recommend_items( UserId, topn=10, verbose=False))
-    hybrid_recommend_tea = hybrid_recommender_model.recommend_items( UserId, topn=3, verbose=False)[['tea_id']]
+    # print(hybrid_recommender_model.recommend_items( user_id, topn=10, verbose=False))
+    hybrid_recommend_tea = hybrid_recommender_model.recommend_items( user_id, topn=3, verbose=False)[['tea_id']]
     hybrid_recommend_tea['tea_name'] = ( 
         hybrid_recommend_tea
         .loc[:, 'tea_id']
