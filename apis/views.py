@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 from email import header
 from urllib import response
+from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -103,17 +104,17 @@ class LogInView(viewsets.ModelViewSet):
     serializer_class = LogInSerializer
 
     def Login(self, request):
-        serializer = self.serializer_class(data = request.data)
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.validated_data['user']
-            access = serializer.validated_data['access']
-            refresh = serializer.validated_data['refresh']
-            print(user)
-            return JsonResponse({
-                'user' : user,
-                'refresh' : refresh,
-                'access' : access,
-            })
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        access = serializer.validated_data['access']
+        refresh = serializer.validated_data['refresh']
+
+        return JsonResponse({
+            'user' : (model_to_dict(user)),
+            'refresh' : refresh,
+            'access' : access,
+        })
 
 class UsersView(viewsets.ModelViewSet):
     queryset = Users.objects.all()
