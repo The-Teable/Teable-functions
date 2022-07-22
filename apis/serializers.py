@@ -49,7 +49,18 @@ class SignUpSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 class LogInSerializer(serializers.ModelSerializer):
-    class Meta:
+    user_id = serializers.CharField(
+        required=True,
+        write_only=True,
+    )
+
+    password = serializers.CharField(
+        required=True,
+        write_only=True,
+        style={'input_type': 'password'},
+    )
+
+    class Meta():
         model = Users
         fields = ['user_id', 'password']
 
@@ -58,7 +69,6 @@ class LogInSerializer(serializers.ModelSerializer):
         password = data.get('password', None)
         if Users.objects.filter(user_id = user_id).exists():
             user = Users.objects.get(user_id=user_id)
-
             if not user.check_password(password):
                 raise serializers.ValidationError("wrong password")
         else:
