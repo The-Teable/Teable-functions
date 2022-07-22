@@ -232,7 +232,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateTimeField(blank=True, null=True)
     is_superuser = models.IntegerField(default=0)
 
-    USERNAME_FIELD = 'user_id'    
+    USERNAME_FIELD = 'user_id'
     REQUIRED_FIELDS = []
 
     objects = UserManager()
@@ -240,6 +240,25 @@ class Users(AbstractBaseUser, PermissionsMixin):
     class Meta:
         managed = False
         db_table = 'users'
+
+class UsersGroups(models.Model):
+    id = models.IntegerField(primary_key=True)
+    users_id = models.IntegerField(blank=True, null=True)
+    group_id = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'users_groups'
+
+
+class UsersUserPermissions(models.Model):
+    id = models.IntegerField(primary_key=True)
+    users_id = models.IntegerField(blank=True, null=True)
+    permission_id = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'users_user_permissions'
 
 
 # admin customizing
