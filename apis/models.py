@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
@@ -187,6 +188,27 @@ class Teas(models.Model):
         db_table = 'teas'
 
 
+class TokenBlacklistBlacklistedtoken(models.Model):
+    blacklisted_at = models.DateTimeField()
+    token = models.OneToOneField('TokenBlacklistOutstandingtoken', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'token_blacklist_blacklistedtoken'
+
+
+class TokenBlacklistOutstandingtoken(models.Model):
+    jti = models.CharField(unique=True, max_length=32)
+    token = models.TextField()
+    created_at = models.DateTimeField()
+    expires_at = models.DateTimeField()
+    user_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'token_blacklist_outstandingtoken'
+
+
 class UserBuyProduct(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING)
     tea = models.ForeignKey(Teas, models.DO_NOTHING)
@@ -260,6 +282,31 @@ class UsersUserPermissions(models.Model):
         managed = False
         db_table = 'users_user_permissions'
 
+
+# class OutstandingToken(models.Model):
+#     id = models.BigAutoField(primary_key=True, serialize=False)
+#     user = models.ForeignKey(
+#         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+#     )
+
+#     jti = models.CharField(unique=True, max_length=255)
+#     token = models.TextField()
+#     created_at = models.DateTimeField(null=True, blank=True)
+#     expires_at = models.DateTimeField()
+
+#     class Meta:
+#         managed = False
+#         db_table = 'token_blacklist_outstandingtoken'
+
+
+# class BlacklistedToken(models.Model):
+#     id = models.BigAutoField(primary_key=True, serialize=False)
+#     token = models.OneToOneField(OutstandingToken, on_delete=models.CASCADE)
+#     blacklisted_at = models.DateTimeField(auto_now_add=True)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'token_blacklist_blacklistedtoken'
 
 # admin customizing
 
