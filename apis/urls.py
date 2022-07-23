@@ -15,7 +15,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 # django auth
 from rest_framework_simplejwt.views import (
-    TokenRefreshView, TokenVerifyView
+    TokenRefreshView, TokenVerifyView, TokenBlacklistView
 )
 
 from . import views
@@ -124,8 +124,9 @@ urlpatterns = format_suffix_patterns([
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
-    # auth login
+    # auth login/logout
     path('login/', login, name='login'),
+    path('logout/', TokenBlacklistView.as_view(), name = 'logout'),
 
     # auth signup
     path('signup/', signup_create, name='signup_create'),
