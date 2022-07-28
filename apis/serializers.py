@@ -78,7 +78,7 @@ class LogInSerializer(serializers.ModelSerializer):
         refresh = str(token)
         access = str(token.access_token)
         data = {
-            'user' : user,
+            # 'user' : user,
             'refresh' : refresh,
             'access' : access,
         }
