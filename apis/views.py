@@ -106,12 +106,12 @@ class LogInView(viewsets.ModelViewSet):
     def Login(self, request):
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        # user = serializer.validated_data['user']
         access = serializer.validated_data['access']
         refresh = serializer.validated_data['refresh']
 
         return JsonResponse({
-            'user' : (model_to_dict(user)),
+            # 'user' : (model_to_dict(user)),
             'refresh' : refresh,
             'access' : access,
         })
