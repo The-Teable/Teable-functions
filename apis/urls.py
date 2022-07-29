@@ -162,6 +162,7 @@ urlpatterns = format_suffix_patterns([
     re_path('filtering-results/(?P<filteringId>.+)/$', filtering_results_list, name='filtering_results_list'),
 
     # main_filtering_results
+    path('main-filtering-results/',main_filtering_results_list, name='main_filtering_results_list'),
     re_path('main-filtering-results/(?P<user_id>.+)/$',main_filtering_results_list, name='main_filtering_results_list'),
 
     # theme_filtering
