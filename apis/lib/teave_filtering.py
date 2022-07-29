@@ -157,8 +157,8 @@ def get_filtering_tea(user_id):
     # print(cf_recommender_model.recommend_items(user_id, topn=10, verbose=False))
 
     # content_based_filtering
-    nltk.download('stopwords') 
-    nltk.download('punkt')
+    # nltk.download('stopwords') 
+    # nltk.download('punkt')
 
     vectorizer = TfidfVectorizer( 
         analyzer='word',
