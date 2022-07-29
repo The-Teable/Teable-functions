@@ -33,7 +33,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
-# 테마 필터링 알고리즘
+# 필터링 알고리즘
 from .lib import theme_filtering, bestselling_filtering, teave_filtering
 
 # Create your views here.
@@ -70,10 +70,6 @@ class SendEmail(APIView):
 
         except Exception as e:
             return Response(e, status=500)
-
-
-def index(request):
-    return HttpResponse("hello, we are pirates")
 
 # django auth
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -235,15 +231,16 @@ class MainFilteringResultView(viewsets.ModelViewSet):
     serializer_class = MainFilteringResultsSerializer
 
     def list(self, request, *args, **kwargs):
-        user_id = self.kwargs['user_id'] if self.kwargs else None
+        user_id = request.GET['user_id']
         if user_id:
-            teave_filtering_result_map = teave_filtering(user_id)
+            teave_filtering_result_map = teave_filtering.get_filtering_tea(user_id)
             teas = []
-            for result in teave_filtering_result_map:
-                tea_id = result.tea_id
+            for result in teave_filtering_result_map['tea_id']:
+                tea_id = result
                 tea = Teas.objects.get(id=tea_id)
-                teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                            'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
+                teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 
+                            'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
+                            'price': tea.price})
             return Response(teas)
 
 class ThemeFilteringView(viewsets.ModelViewSet):
@@ -300,3 +297,6 @@ class UserClickProductView(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response({'user_click_product_id': created_instance.id}, status=200, headers=headers)
+
+def index(request):
+    return HttpResponse("hello, we are pirates")
