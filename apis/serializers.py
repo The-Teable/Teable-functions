@@ -17,16 +17,17 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueValidator
 
 #auth serializer
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
-    def get_token(cls, user):
-        token = super().get_token(user)
-        # Add custom claims
-        token['user_id'] = user.user_id
-        token['name'] = user.name
-        token['tel'] = user.tel
-        # ...
-        return token
+#     def get_token(cls, user):
+#         token = super().get_token(user)
+#         # Add custom claims
+#         print(user)
+#         token['user_id'] = user.user_id
+#         token['name'] = user.name
+#         token['tel'] = user.tel
+#         # ...
+#         return token
 
 class SignUpSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -47,7 +48,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         
         return super().create(validated_data)
 
-class LogInSerializer(serializers.ModelSerializer):
+class LogInSerializer(TokenObtainPairSerializer):
     user_id = serializers.CharField(
         required=True,
         write_only=True,
@@ -63,6 +64,15 @@ class LogInSerializer(serializers.ModelSerializer):
         model = Users
         fields = ['user_id', 'password']
 
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Add custom claims
+        token['user_id'] = user.user_id
+        token['name'] = user.name
+        token['tel'] = user.tel
+        # ...
+        return token
+
     def validate(self, data):
         user_id = data.get('user_id', None)
         password = data.get('password', None)
@@ -73,7 +83,7 @@ class LogInSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("wrong user_id")
 
-        token = RefreshToken.for_user(user)
+        token = self.get_token(user)
         refresh = str(token)
         access = str(token.access_token)
         data = {
