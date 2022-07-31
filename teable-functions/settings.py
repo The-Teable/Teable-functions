@@ -200,3 +200,5 @@ SIMPLE_JWT = {
 
 # auth user model
 AUTH_USER_MODEL = 'apis.Users'
+
+APPEND_SLASH = False
