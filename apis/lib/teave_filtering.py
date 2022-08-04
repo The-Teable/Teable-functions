@@ -23,7 +23,6 @@ def get_filtering_tea(user_id):
     myDB = MYSQLDB()
 
     # user_id = int(user_id)
-    user_id = 1822
 
     # 만약 신규유저라면 common filtering 수행 -> common 과 hybrid 분리
     # if (user_id not in list(myDB.test_boolean['user_id'])):
@@ -31,7 +30,7 @@ def get_filtering_tea(user_id):
 
     # 변수선언
     User_df = myDB.users
-    UserAge = int(User_df[User_df['id'] == user_id].age)
+    UserAge = int(User_df[User_df['user_id'] == user_id].age)
     Tea_df = myDB.teas
     Tea_df.caffeine.replace(
         ['O', 'X'],
@@ -49,7 +48,7 @@ def get_filtering_tea(user_id):
     interaction_df['user_id'] = (
         interaction_df
         .loc[:, 'user_id']
-        .apply(lambda d: d if((UserAge + 10 >= int(User_df[User_df['id'] == d].age)) and (UserAge - 10 <= int(User_df[User_df['id'] == d].age))) else None)
+        .apply(lambda d: d if((UserAge + 10 >= int(User_df[User_df['user_id'] == d].age)) and (UserAge - 10 <= int(User_df[User_df['user_id'] == d].age))) else None)
     )
     interaction_df.dropna(inplace=True)
 
