@@ -176,7 +176,7 @@ urlpatterns = format_suffix_patterns([
     path('best-selling/', bestselling_filtering_list, name='bestselling_filtering_list'),
 
     # user_buy_product
-    path('user-buy-product/new/', user_buy_product_create, name='user_buy_product_create'),
+    path('user-buy-product/', user_buy_product_create, name='user_buy_product_create'),
 
     # user_click_product
     path('user-click-product/', user_click_product_create, name='user_click_product_create'),
