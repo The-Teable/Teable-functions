@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 from sqlalchemy import null
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, UserBuyProduct, UserClickProduct
+from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, UserBuyProduct, UserClickProduct, UserWishProduct
 from .lib import common_filtering, teave_filtering
 import json
 
@@ -226,6 +226,15 @@ class UserBuyProductSerializer(serializers.ModelSerializer):
 class UserClickProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserClickProduct
+        fields = ['user_id', 'tea_id']
+
+    def create(self, validated_data):
+        validated_data['create_date'] = datetime.now()
+        return super().create(validated_data)
+
+class UserWishProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserWishProduct
         fields = ['user_id', 'tea_id']
 
     def create(self, validated_data):
