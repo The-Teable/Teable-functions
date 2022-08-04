@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
 from sqlalchemy import JSON, false
 from apis.serializers import (
-    MyTokenObtainPairSerializer, SignUpSerializer, LogInSerializer,
+    SignUpSerializer, LogInSerializer,
     FilteringResultsSerializer, MainFilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, 
     ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, 
     UserClickProductSerializer
@@ -73,7 +73,7 @@ class SendEmail(APIView):
 
 # django auth
 class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+    serializer_class = LogInSerializer
     
 class SignUpView(viewsets.ModelViewSet):
     queryset = Users.objects.all()
