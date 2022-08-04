@@ -6,8 +6,8 @@ from .views import (
     FilteringResultsView, MainFilteringResultView, 
     QuestionnairesView, SendEmail, 
     SurveyResultsView, UsersView, 
-    UserBuyProductView, UserClickProductView, 
-    ThemeFilteringView, BestSellingView,
+    UserBuyProductView, UserClickProductView, UserWishProductView,
+    ThemeFilteringView, BestSellingView, 
     #auth
     MyTokenObtainPairView, SignUpView, LogInView
     )
@@ -109,6 +109,10 @@ user_buy_product_create = UserBuyProductView.as_view({
 })
 
 user_click_product_create = UserClickProductView.as_view({
+    'post': 'create',
+})
+
+user_wish_product_create = UserWishProductView.as_view({
     'post': 'create',
 })
 
