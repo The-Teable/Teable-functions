@@ -181,6 +181,9 @@ urlpatterns = format_suffix_patterns([
     # user_click_product
     path('user-click-product/', user_click_product_create, name='user_click_product_create'),
 
+    # user_wish_product
+    path('user-wish-product/', user_wish_product_create, name='user_wish_product_create'),
+
     # sending email
     path('send-email/', send_email_list, name='send_email_list'),
 
