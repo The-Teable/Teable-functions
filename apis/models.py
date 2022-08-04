@@ -189,6 +189,7 @@ class Teas(models.Model):
 
 
 class TokenBlacklistBlacklistedtoken(models.Model):
+    id = models.BigAutoField(primary_key=True)
     blacklisted_at = models.DateTimeField()
     token = models.OneToOneField('TokenBlacklistOutstandingtoken', models.DO_NOTHING)
 
@@ -198,11 +199,12 @@ class TokenBlacklistBlacklistedtoken(models.Model):
 
 
 class TokenBlacklistOutstandingtoken(models.Model):
-    jti = models.CharField(unique=True, max_length=32)
+    id = models.BigAutoField(primary_key=True)
     token = models.TextField()
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(blank=True, null=True)
     expires_at = models.DateTimeField()
-    user_id = models.IntegerField()
+    user_id = models.IntegerField(blank=True, null=True)
+    jti = models.CharField(unique=True, max_length=255)
 
     class Meta:
         managed = False
@@ -210,7 +212,7 @@ class TokenBlacklistOutstandingtoken(models.Model):
 
 
 class UserBuyProduct(models.Model):
-    user = models.ForeignKey('Users', models.DO_NOTHING)
+    user_id = models.CharField(max_length=255)
     tea = models.ForeignKey(Teas, models.DO_NOTHING)
     create_date = models.DateTimeField(blank=True, null=True)
 
@@ -220,7 +222,7 @@ class UserBuyProduct(models.Model):
 
 
 class UserClickProduct(models.Model):
-    user = models.ForeignKey('Users', models.DO_NOTHING)
+    user_id = models.CharField(max_length=255)
     tea = models.ForeignKey(Teas, models.DO_NOTHING)
     create_date = models.DateTimeField(blank=True, null=True)
 
@@ -230,7 +232,7 @@ class UserClickProduct(models.Model):
 
 
 class UserWishProduct(models.Model):
-    user = models.ForeignKey('Users', models.DO_NOTHING)
+    user_id = models.CharField(max_length=255)
     tea = models.ForeignKey(Teas, models.DO_NOTHING)
     create_date = models.DateTimeField(blank=True, null=True)
 
