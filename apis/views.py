@@ -10,10 +10,10 @@ from sqlalchemy import JSON, false
 from apis.serializers import (
     SignUpSerializer, LogInSerializer,
     FilteringResultsSerializer, MainFilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, 
-    ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, 
+    ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, UserWishProductSerializer,
     UserClickProductSerializer
 )
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct
+from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct, UserWishProduct
 # import import_ipynb
 # import filtering_algorithm
 from .lib import common_filtering
@@ -297,6 +297,18 @@ class UserClickProductView(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response({'user_click_product_id': created_instance.id}, status=200, headers=headers)
+
+class UserWishProductView(viewsets.ModelViewSet):
+    queryset = UserWishProduct.objects.all()
+    serializer_class = UserWishProductSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({'user_wish_product_id': created_instance.id}, status=200, headers=headers)
 
 def index(request):
     return HttpResponse("hello, we are pirates")
