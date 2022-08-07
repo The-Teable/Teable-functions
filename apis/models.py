@@ -146,7 +146,7 @@ class FilteringResults(models.Model):
 
 class MypageInfo(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING)
-    class_field = models.CharField(db_column='class', max_length=255)  # Field renamed because it was a Python reserved word.
+    user_class = models.CharField(max_length=255)
     mileage = models.PositiveIntegerField()
     coupon = models.PositiveIntegerField()
     order_history = models.PositiveIntegerField()
