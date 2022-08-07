@@ -120,6 +120,10 @@ user_wish_product_create = UserWishProductView.as_view({
     'post': 'create',
 })
 
+user_wish_product_list = UserWishProductView.as_view({
+    'get': 'list',
+})
+
 send_email_list = SendEmail.as_view()
 
 urlpatterns = format_suffix_patterns([
@@ -191,6 +195,8 @@ urlpatterns = format_suffix_patterns([
 
     # user_wish_product
     path('user-wish-product/', user_wish_product_create, name='user_wish_product_create'),
+    path('user-wish-product/', user_wish_product_list, name='user_wish_product_list'),
+    re_path('user-wish-product/(?P<user_id>.+)/$', user_wish_product_list, name='user_wish_product_list'),
 
     # sending email
     path('send-email/', send_email_list, name='send_email_list'),
