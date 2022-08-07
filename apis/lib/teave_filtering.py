@@ -53,11 +53,11 @@ def get_filtering_tea(user_id):
     interaction_df.dropna(inplace=True)
 
     event_type_strength = {
-    'Recommend_test': 2.2,
+    'Recommend_test': 1.2,
     'Click': 1.0,
-    'Search': 3.2,
-    'Cart': 2.5,
-    'LIKE': 2.0,
+    'Search': 2.0,
+    'Cart': 2.8,
+    'LIKE': 2.3,
     'FOLLOW': 3.0,
     'Buy': 3.5,
     }
