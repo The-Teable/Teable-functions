@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.urls.conf import re_path
 # from apis.views import send_email
 from .views import (
-    FilteringResultsView, MainFilteringResultView, 
+    FilteringResultsView, MainFilteringResultView, MyPageInfoView, 
     QuestionnairesView, SendEmail, 
     SurveyResultsView, UsersView, 
     UserBuyProductView, UserClickProductView, UserWishProductView,
@@ -31,6 +31,10 @@ signup_create = SignUpView.as_view({
 
 login = LogInView.as_view({
     'post' : 'Login',
+})
+
+mypage_info_list = MyPageInfoView.as_view({
+    'get': 'list',
 })
 
 users_list = UsersView.as_view({
@@ -131,6 +135,10 @@ urlpatterns = format_suffix_patterns([
     # auth login/logout
     path('login/', login, name='login'),
     path('logout/', TokenBlacklistView.as_view(), name = 'logout'),
+
+    # mypage
+    path('mypage-info/', mypage_info_list, name = 'mypage_info_list'),
+    re_path('mypage-info/(?P<user_id>.+)/$', mypage_info_list, name = 'mypage_info_list'),
 
     # auth signup
     path('signup/', signup_create, name='signup_create'),
