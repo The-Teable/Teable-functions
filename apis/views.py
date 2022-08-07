@@ -309,6 +309,17 @@ class UserClickProductView(viewsets.ModelViewSet):
     queryset = UserClickProduct.objects.all()
     serializer_class = UserClickProductSerializer
 
+    def list(self, request, *args, **kwargs):
+        bestselling_filtering_result_map = bestselling_filtering()
+        teas = []
+        for result in bestselling_filtering_result_map:
+            tea_id = result.tea_id
+            tea = Teas.objects.get(id=tea_id)
+            teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
+                        'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
+        return Response(teas)
+
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -320,6 +331,18 @@ class UserClickProductView(viewsets.ModelViewSet):
 class UserWishProductView(viewsets.ModelViewSet):
     queryset = UserWishProduct.objects.all()
     serializer_class = UserWishProductSerializer
+
+    def list(self, request, *args, **kwargs):
+        user_id = request.GET['user_id']
+        if user_id:
+            result_map = UserWishProduct.objects.filter(user_id=user_id)
+            teas = []
+            for tea_id in result_map['tea_id']:
+                tea = Teas.objects.get(id=tea_id)
+                teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 
+                            'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
+                            'price': tea.price})
+            return Response(teas)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
