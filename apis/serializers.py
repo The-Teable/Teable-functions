@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 from sqlalchemy import null
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, UserBuyProduct, UserClickProduct, UserWishProduct
+from .models import FilteringResultProductMap, FilteringResults, Questionnaires, Teas, Users, SurveyResults, UserBuyProduct, UserClickProduct, UserWishProduct, MypageInfo
 from .lib import common_filtering, teave_filtering
 import json
 
@@ -45,6 +45,8 @@ class SignUpSerializer(serializers.ModelSerializer):
             pass
         validated_data['password'] = make_password(validated_data['password'])
         validated_data['create_date'] = datetime.now()
+
+        MypageInfo.objects.create(user_id=validated_data['user_id'], user_class="녹차")
         
         return super().create(validated_data)
 
@@ -92,6 +94,11 @@ class LogInSerializer(TokenObtainPairSerializer):
             'access' : access,
         }
         return data
+
+class MyPageInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MypageInfo
+        fields = '__all__'
 
 class TeaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -214,10 +221,11 @@ class BestSellingSerializer(serializers.ModelSerializer):
         model = Teas
         fields = []
 
+# 여러개의 tea_id가 들어왔을 경우도 고려해야함.
 class UserBuyProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBuyProduct
-        fields = ['user_id', 'tea_id']
+        fields = ['user_id']
 
     def create(self, validated_data):
         validated_data['create_date'] = datetime.now()
