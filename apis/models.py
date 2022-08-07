@@ -123,10 +123,10 @@ class DjangoSession(models.Model):
 
 class FilteringResultProductMap(models.Model):
     filtering_result = models.ForeignKey('FilteringResults', models.DO_NOTHING)
+    user = models.ForeignKey('Users', models.DO_NOTHING)
     tea = models.ForeignKey('Teas', models.DO_NOTHING)
     create_date = models.DateTimeField(blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
-    user = models.ForeignKey('Users', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -134,14 +134,30 @@ class FilteringResultProductMap(models.Model):
 
 
 class FilteringResults(models.Model):
-    survey_result = models.OneToOneField('SurveyResults', models.DO_NOTHING)
+    survey_result = models.ForeignKey('SurveyResults', models.DO_NOTHING)
+    user = models.ForeignKey('Users', models.DO_NOTHING)
     create_date = models.DateTimeField(blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
-    user = models.ForeignKey('Users', models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = 'filtering_results'
+
+
+class MypageInfo(models.Model):
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    class_field = models.CharField(db_column='class', max_length=255)  # Field renamed because it was a Python reserved word.
+    mileage = models.PositiveIntegerField()
+    coupon = models.PositiveIntegerField()
+    order_history = models.PositiveIntegerField()
+    delivery = models.PositiveIntegerField()
+    review = models.PositiveIntegerField()
+    create_date = models.DateTimeField(blank=True, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'mypage_info'
 
 
 class Questionnaires(models.Model):
@@ -157,10 +173,10 @@ class Questionnaires(models.Model):
 
 class SurveyResults(models.Model):
     survey_responses = models.CharField(max_length=5000, blank=True, null=True)
-    create_date = models.DateTimeField()
-    update_date = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING)
     questionnaire = models.ForeignKey(Questionnaires, models.DO_NOTHING)
+    create_date = models.DateTimeField(blank=True, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
