@@ -8,12 +8,12 @@ from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
 from sqlalchemy import JSON, false
 from apis.serializers import (
-    SignUpSerializer, LogInSerializer,
+    MyPageInfoSerializer, SignUpSerializer, LogInSerializer,
     FilteringResultsSerializer, MainFilteringResultsSerializer, QuestionnairesSerializer, SurveyResultSerializer, 
     ThemeFilteringSerializer, BestSellingSerializer, UserSerializer, UserBuyProductSerializer, UserWishProductSerializer,
     UserClickProductSerializer
 )
-from .models import FilteringResultProductMap, FilteringResults, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct, UserWishProduct
+from .models import FilteringResultProductMap, FilteringResults, MypageInfo, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct, UserWishProduct
 # import import_ipynb
 # import filtering_algorithm
 from .lib import common_filtering
@@ -111,6 +111,19 @@ class LogInView(viewsets.ModelViewSet):
             'refresh' : refresh,
             'access' : access,
         })
+
+class MyPageInfoView(viewsets.ModelViewSet):
+    serializer_class = MyPageInfoSerializer
+
+    def list(self, request, *args, **kwargs):
+        user_id = self.kwargs['user_id'] if self.kwargs else None
+        if user_id:
+            mypage = MypageInfo.objects.filter(
+                user_id=user_id)
+            mypage_info = []
+            mypage_info.append({"user_class": mypage.user_class, "mileage": mypage.mileage, "coupon": mypage.coupon, 'order_history': mypage.order_history, 'delivery': mypage.delivery, 'review': mypage.review})
+            return Response(mypage_info)
+
 
 class UsersView(viewsets.ModelViewSet):
     queryset = Users.objects.all()
@@ -273,6 +286,7 @@ class BestSellingView(viewsets.ModelViewSet):
                         'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
         return Response(teas)
 
+# 여러개의 tea_id가 들어왔을 경우도 고려해야함.
 class UserBuyProductView(viewsets.ModelViewSet):
     queryset = UserBuyProduct.objects.all()
     serializer_class = UserBuyProductSerializer
@@ -281,9 +295,14 @@ class UserBuyProductView(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
-        for tea_id in request.data['tea_id']:
+        try:
+            tea_id = int(request.data['tea_id'])
             tea = Teas.objects.get(id=tea_id)
             Teas.objects.filter(id=tea_id).update(sell_count = tea.sell_count + 1)
+        except:
+            for tea_id in request.data['tea_id']:
+                tea = Teas.objects.get(id=tea_id)
+                Teas.objects.filter(id=tea_id).update(sell_count = tea.sell_count + 1)
         return Response({'user_buy_product_id': created_instance.id}, status=200)
         
 class UserClickProductView(viewsets.ModelViewSet):
