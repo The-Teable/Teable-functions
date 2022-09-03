@@ -120,8 +120,16 @@ user_wish_product_create = UserWishProductView.as_view({
     'post': 'create',
 })
 
+user_wish_product_delete = UserWishProductView.as_view({
+    'post': 'delete',
+})
+
 user_wish_product_list = UserWishProductView.as_view({
     'get': 'list',
+})
+
+user_wish_product_info = UserWishProductView.as_view({
+    'get': 'info',
 })
 
 send_email_list = SendEmail.as_view()
@@ -182,7 +190,7 @@ urlpatterns = format_suffix_patterns([
     re_path('main-filtering-results/(?P<user_id>.+)/$',main_filtering_results_list, name='main_filtering_results_list'),
 
     # theme_filtering
-    re_path('theme-filtering/(?P<theme>.+)/$', theme_filtering_list, name='theme_filtering_list'),
+    path('theme-filtering/', theme_filtering_list, name='theme_filtering_list'),
 
     # bestselling_filtering
     path('best-selling/', bestselling_filtering_list, name='bestselling_filtering_list'),
@@ -195,8 +203,10 @@ urlpatterns = format_suffix_patterns([
 
     # user_wish_product
     path('user-wish-product/', user_wish_product_create, name='user_wish_product_create'),
+    path('user-wish-product/delete/', user_wish_product_delete, name='user_wish_product_delete'),
     path('user-wish-product/', user_wish_product_list, name='user_wish_product_list'),
     re_path('user-wish-product/(?P<user_id>.+)/$', user_wish_product_list, name='user_wish_product_list'),
+    path('user-wish-product/info/', user_wish_product_info, name='user_wish_product_info'),
 
     # sending email
     path('send-email/', send_email_list, name='send_email_list'),
