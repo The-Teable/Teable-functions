@@ -45,10 +45,8 @@ class SignUpSerializer(serializers.ModelSerializer):
             pass
         validated_data['password'] = make_password(validated_data['password'])
         validated_data['create_date'] = datetime.now()
-
-        MypageInfo.objects.create(user_id=validated_data['user_id'], user_class="녹차")
-        
-        return super().create(validated_data)
+        created_instance = super().create(validated_data)
+        return created_instance
 
 class LogInSerializer(TokenObtainPairSerializer):
     user_id = serializers.CharField(
@@ -70,8 +68,8 @@ class LogInSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         # Add custom claims
         token['user_id'] = user.user_id
-        token['name'] = user.name
-        token['tel'] = user.tel
+        # token['name'] = user.name
+        # token['tel'] = user.tel
         # ...
         return token
 
@@ -99,6 +97,7 @@ class MyPageInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = MypageInfo
         fields = '__all__'
+
 
 class TeaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -137,30 +136,30 @@ class SurveyResultSerializer(serializers.ModelSerializer):
         validated_data['update_date'] = datetime.now()
         return super().update(instance, validated_data)
 
-# 설문조사 결과        
-# class SurveyResult2Serializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = SurveyResults2
-#         fields = ['survey_responses']
-#     def create(self, validated_data):
-#         query_params = self.context['request'].query_params
-#         user_id = query_params.get('user_id')
-#         version = query_params.get('version')
-#         print(user_id, version, not(version), not(user_id))
-#         if (not user_id) or (not version):
-#             raise serializers.ValidationError('Params not provided enough')
-#         validated_data['user_id'] = user_id
-#         validated_data['questionnaire_id'] = version
-#         validated_data['create_date'] = datetime.now()
-#         return super().create(validated_data)
-    
-#     def update(self, instance, validated_data):
-#         survey_id = self.context['request'].query_params.get('surveyId')
-#         if not survey_id:
-#             raise serializers.ValidationError('Params not provided enough')
-#         validated_data['survey_id'] = survey_id
-#         validated_data['update_date'] = datetime.now()
-#         return super().update(instance, validated_data)
+# 설문조사 결과 
+# class SurveyResult2Serializer(serializers.ModelSerializer): 
+#     class Meta: 
+#         model = SurveyResults2 
+#         fields = ['survey_responses'] 
+#     def create(self, validated_data): 
+#         query_params = self.context['request'].query_params 
+#         user_id = query_params.get('user_id') 
+#         version = query_params.get('version') 
+#         print(user_id, version, not(version), not(user_id)) 
+#         if (not user_id) or (not version): 
+#             raise serializers.ValidationError('Params not provided enough') 
+#         validated_data['user_id'] = user_id 
+#         validated_data['questionnaire_id'] = version 
+#         validated_data['create_date'] = datetime.now() 
+#         return super().create(validated_data) 
+
+#     def update(self, instance, validated_data): 
+#         survey_id = self.context['request'].query_params.get('surveyId') 
+#         if not survey_id: 
+#             raise serializers.ValidationError('Params not provided enough') 
+#         validated_data['survey_id'] = survey_id 
+#         validated_data['update_date'] = datetime.now() 
+#         return super().update(instance, validated_data) 
 
 class QuestionnairesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -221,15 +220,18 @@ class BestSellingSerializer(serializers.ModelSerializer):
         model = Teas
         fields = []
 
-# 여러개의 tea_id가 들어왔을 경우도 고려해야함.
 class UserBuyProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBuyProduct
         fields = ['user_id']
 
     def create(self, validated_data):
-        validated_data['create_date'] = datetime.now()
-        return super().create(validated_data)
+        tea_list = list(validated_data['tea_id'].split(","))
+        for tea_id in tea_list:
+            tea = Teas.objects.get(id=tea_id)
+            Teas.objects.filter(id=tea_id).update(sell_count = tea.sell_count + 1)
+            instance = UserBuyProduct.objects.create(user_id = validated_data['user_id'], tea_id = int(tea_id), create_date = datetime.now())
+        return (instance)
 
 class UserClickProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -248,3 +250,4 @@ class UserWishProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['create_date'] = datetime.now()
         return super().create(validated_data)
+
