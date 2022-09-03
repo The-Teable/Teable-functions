@@ -16,7 +16,7 @@ from apis.serializers import (
 from .models import FilteringResultProductMap, FilteringResults, MypageInfo, Questionnaires, SurveyResults, Teas, Users, UserBuyProduct, UserClickProduct, UserWishProduct
 # import import_ipynb
 # import filtering_algorithm
-from .lib import common_filtering
+from .lib import common_filtering, theme_filtering
 from rest_framework.views import APIView
 from rest_framework import viewsets, generics, serializers
 from smtplib import SMTP_SSL
@@ -94,6 +94,7 @@ class SignUpView(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+        MypageInfo.objects.create(user_id = request.data['user_id'], user_class='녹차', create_date = datetime.now())
         return Response(status=201, headers=headers)
 
 class LogInView(viewsets.ModelViewSet):
@@ -112,7 +113,9 @@ class LogInView(viewsets.ModelViewSet):
             'access' : access,
         })
 
+
 class MyPageInfoView(viewsets.ModelViewSet):
+    queryset = MypageInfo.objects.all()
     serializer_class = MyPageInfoSerializer
 
     def list(self, request, *args, **kwargs):
@@ -124,7 +127,6 @@ class MyPageInfoView(viewsets.ModelViewSet):
             mypage_info.append({"user_class": mypage.user_class, "mileage": mypage.mileage, "coupon": mypage.coupon, 'order_history': mypage.order_history, 'delivery': mypage.delivery, 'review': mypage.review})
             return Response(mypage_info)
 
-
 class UsersView(viewsets.ModelViewSet):
     queryset = Users.objects.all()
     serializer_class = UserSerializer
@@ -135,7 +137,7 @@ class UsersView(viewsets.ModelViewSet):
         created_instance = serializer.save()
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response({'user_id': created_instance.id}, status=200, headers=headers)
+        return Response({'user_id': created_instance.id}, status=201, headers=headers)
 
     def get_object(self):
         pk = self.kwargs['user_id'] if self.kwargs else None
@@ -155,7 +157,7 @@ class SurveyResultsView(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save()
         headers = self.get_success_headers(serializer.data)
-        return Response({'survey_id': created_instance.id}, status=200, headers=headers)
+        return Response({'survey_id': created_instance.id}, status=201, headers=headers)
 
     def get_queryset(self):
         user_id = self.kwargs['user_id'] if self.kwargs else None
@@ -229,14 +231,14 @@ class FilteringResultsView(viewsets.ModelViewSet):
                 tea_id = result.tea_id
                 tea = Teas.objects.get(id=tea_id)
                 teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                            'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
+                            'image_url': tea.image_url, 'site_url': tea.site_url, 'price': int(tea.price), 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
             return Response(teas)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save()
-        return Response({'filtering_id': created_instance.id}, status=200)
+        return Response({'filtering_id': created_instance.id}, status=201)
 
 # 메인페이지에서 보여주는 Tea 추천 결과
 class MainFilteringResultView(viewsets.ModelViewSet):
@@ -253,7 +255,7 @@ class MainFilteringResultView(viewsets.ModelViewSet):
                 tea = Teas.objects.get(id=tea_id)
                 teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 
                             'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                            'price': tea.price})
+                            'price': int(tea.price)})
             return Response(teas)
 
 class ThemeFilteringView(viewsets.ModelViewSet):
@@ -261,16 +263,21 @@ class ThemeFilteringView(viewsets.ModelViewSet):
     serializer_class = ThemeFilteringSerializer
 
     def list(self, request, *args, **kwargs):
-        theme = self.kwargs['theme'] if self.kwargs else None
-        if theme:
-            theme_filtering_result_map = theme_filtering(theme)
-            teas = []
-            for result in theme_filtering_result_map:
-                tea_id = result.tea_id
-                tea = Teas.objects.get(id=tea_id)
-                teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                            'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
-            return Response(teas)
+        theme_list = ['winter']
+        tea_list = []
+        for theme in theme_list:
+            theme_filtering_result_map = theme_filtering.theme_filtering(theme)
+            teas = {}
+            teas['theme'] = theme
+            teas['tea_info'] = []
+            print(theme_filtering_result_map)
+            for i in range(len(theme_filtering_result_map)):
+                result = theme_filtering_result_map.iloc[i]
+                teas['tea_info'].append(({"id": result['id'], "name": result['name'], "brand": result.brand, 'type': result.type, 'flavor': result.flavor, 'caffeine': result.caffeine, 'efficacies': result.efficacies,
+                            'image_url': result.image_url, 'price': int(result.price), 'stock': result.stock}))
+            tea_list.append(teas)
+        return Response(tea_list)
+
 
 class BestSellingView(viewsets.ModelViewSet):
     queryset = Teas.objects.all()
@@ -283,10 +290,9 @@ class BestSellingView(viewsets.ModelViewSet):
             tea_id = result.tea_id
             tea = Teas.objects.get(id=tea_id)
             teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                        'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
+                        'image_url': tea.image_url, 'site_url': tea.site_url, 'price': int(tea.price), 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
         return Response(teas)
 
-# 여러개의 tea_id가 들어왔을 경우도 고려해야함.
 class UserBuyProductView(viewsets.ModelViewSet):
     queryset = UserBuyProduct.objects.all()
     serializer_class = UserBuyProductSerializer
@@ -294,31 +300,12 @@ class UserBuyProductView(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
-        try:
-            tea_id = int(request.data['tea_id'])
-            tea = Teas.objects.get(id=tea_id)
-            Teas.objects.filter(id=tea_id).update(sell_count = tea.sell_count + 1)
-        except:
-            for tea_id in request.data['tea_id']:
-                tea = Teas.objects.get(id=tea_id)
-                Teas.objects.filter(id=tea_id).update(sell_count = tea.sell_count + 1)
-        return Response({'user_buy_product_id': created_instance.id}, status=200)
+        serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
+        return Response(status=201)
         
 class UserClickProductView(viewsets.ModelViewSet):
     queryset = UserClickProduct.objects.all()
     serializer_class = UserClickProductSerializer
-
-    def list(self, request, *args, **kwargs):
-        bestselling_filtering_result_map = bestselling_filtering()
-        teas = []
-        for result in bestselling_filtering_result_map:
-            tea_id = result.tea_id
-            tea = Teas.objects.get(id=tea_id)
-            teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                        'image_url': tea.image_url, 'site_url': tea.site_url, 'price': tea.price, 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
-        return Response(teas)
-
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -326,11 +313,20 @@ class UserClickProductView(viewsets.ModelViewSet):
         created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response({'user_click_product_id': created_instance.id}, status=200, headers=headers)
+        return Response({'user_click_product_id': created_instance.id}, status=201, headers=headers)
 
 class UserWishProductView(viewsets.ModelViewSet):
     queryset = UserWishProduct.objects.all()
     serializer_class = UserWishProductSerializer
+
+    # def info(self, request, *args, **kwargs):
+    #     # user_id = self.kwargs['user_id'] if self.kwargs else None
+    #     # if user_id:
+    #     #     result_map = UserWishProduct.objects.filter(user_id=user_id)
+    #     #     tea_ids = []
+    #     #     for tea_id in result_map['tea_id']:
+    #     #         tea_ids.append(int(tea_id))
+    #     #     return Response(tea_ids)
 
     def list(self, request, *args, **kwargs):
         user_id = request.GET['user_id']
@@ -341,7 +337,7 @@ class UserWishProductView(viewsets.ModelViewSet):
                 tea = Teas.objects.get(id=tea_id)
                 teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 
                             'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                            'price': tea.price})
+                            'price': int(tea.price)})
             return Response(teas)
 
     def create(self, request, *args, **kwargs):
@@ -350,7 +346,15 @@ class UserWishProductView(viewsets.ModelViewSet):
         created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response({'user_wish_product_id': created_instance.id}, status=200, headers=headers)
+        return Response({'user_wish_product_id': created_instance.id}, status=201, headers=headers)
+
+
+    def delete(self, request, *args, **kwargs):
+        user_id = request.data['user_id']
+        tea_id = request.data['tea_id']
+        data = UserWishProduct.objects.get(user_id=user_id, tea_id=tea_id)
+        data.delete()
+        return Response(status=204)
 
 def index(request):
     return HttpResponse("hello, we are pirates")
