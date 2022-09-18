@@ -223,7 +223,7 @@ class BestSellingSerializer(serializers.ModelSerializer):
 class UserBuyProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBuyProduct
-        fields = ['user_id']
+        fields = []
 
     def create(self, validated_data):
         tea_list = list(validated_data['tea_id'].split(","))
