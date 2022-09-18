@@ -2,8 +2,11 @@
 from datetime import datetime, timezone
 from email import header
 from urllib import response
+from urllib.request import Request
 from django.forms import model_to_dict
 from django.http import HttpResponse, JsonResponse
+import jwt
+import my_settings
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError as DjangoValidationError
 from sqlalchemy import JSON, false
@@ -308,9 +311,12 @@ class UserClickProductView(viewsets.ModelViewSet):
     serializer_class = UserClickProductSerializer
 
     def create(self, request, *args, **kwargs):
+        token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
+        payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
+        user_id = payload['user_id']
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
+        created_instance = serializer.save(user_id = user_id, tea_id = request.data['tea_id'])
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response({'user_click_product_id': created_instance.id}, status=201, headers=headers)
@@ -341,9 +347,12 @@ class UserWishProductView(viewsets.ModelViewSet):
             return Response(teas)
 
     def create(self, request, *args, **kwargs):
+        token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
+        payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
+        user_id = payload['user_id']
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        created_instance = serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
+        created_instance = serializer.save(user_id = user_id, tea_id = request.data['tea_id'])
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response({'user_wish_product_id': created_instance.id}, status=201, headers=headers)
