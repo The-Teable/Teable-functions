@@ -301,9 +301,13 @@ class UserBuyProductView(viewsets.ModelViewSet):
     serializer_class = UserBuyProductSerializer
 
     def create(self, request, *args, **kwargs):
+        token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
+        payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
+        user_id = payload['user_id']
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user_id = request.data['user_id'], tea_id = request.data['tea_id'])
+        serializer.save(user_id = user_id, tea_id = request.data['tea_id'])
+        self.perform_create(serializer)
         return Response(status=201)
         
 class UserClickProductView(viewsets.ModelViewSet):
