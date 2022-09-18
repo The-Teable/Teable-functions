@@ -236,7 +236,7 @@ class UserBuyProductSerializer(serializers.ModelSerializer):
 class UserClickProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserClickProduct
-        fields = ['user_id', 'tea_id']
+        fields = ['tea_id']
 
     def create(self, validated_data):
         validated_data['create_date'] = datetime.now()
@@ -245,7 +245,7 @@ class UserClickProductSerializer(serializers.ModelSerializer):
 class UserWishProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserWishProduct
-        fields = ['user_id', 'tea_id']
+        fields = ['tea_id']
 
     def create(self, validated_data):
         validated_data['create_date'] = datetime.now()
