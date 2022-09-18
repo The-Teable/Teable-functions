@@ -109,12 +109,12 @@ class LogInView(viewsets.ModelViewSet):
         # user = serializer.validated_data['user']
         access = serializer.validated_data['access']
         refresh = serializer.validated_data['refresh']
-
-        return JsonResponse({
+        res = JsonResponse({
             # 'user' : (model_to_dict(user)),
-            'refresh' : refresh,
             'access' : access,
         })
+        res.set_cookie('refresh', refresh, httponly=True)
+        return res
 
 
 class MyPageInfoView(viewsets.ModelViewSet):
