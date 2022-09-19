@@ -42,23 +42,23 @@ def get_filtering_tea(user_id):
     recommend_test_result_df = myDB.recommend_test_result[['tea_id', 'user_id', 'interaction_type']] 
     user_buy_df = myDB.user_buy_df[['tea_id', 'user_id', 'interaction_type']]
     user_click_df = myDB.user_click_df[['tea_id', 'user_id', 'interaction_type']]
+    user_wish_df = myDB.user_wish_df[['tea_id', 'user_id', 'interaction_type']]
 
     interaction_df = pd.DataFrame({'tea_id' : [], 'user_id' : [], 'interaction_type': []})
-    interaction_df = pd.concat([interaction_df, recommend_test_result_df, user_buy_df, user_click_df])
-    interaction_df['user_id'] = (
-        interaction_df
-        .loc[:, 'user_id']
-        # .apply(lambda d: d if((UserAge + 10 >= int(User_df[User_df['user_id'] == d].age)) and (UserAge - 10 <= int(User_df[User_df['user_id'] == d].age))) else None)
-    )
-    interaction_df.dropna(inplace=True)
+    interaction_df = pd.concat([interaction_df, recommend_test_result_df, user_buy_df, user_click_df, user_wish_df])
+    # interaction_df['user_id'] = (
+    #     interaction_df
+    #     .loc[:, 'user_id']
+    #     # .apply(lambda d: d if((UserAge + 10 >= int(User_df[User_df['user_id'] == d].age)) and (UserAge - 10 <= int(User_df[User_df['user_id'] == d].age))) else None)
+    # )
+    # interaction_df.dropna(inplace=True)
 
     event_type_strength = {
     'Recommend_test': 1.2,
     'Click': 1.0,
     'Search': 2.0,
     'Cart': 2.8,
-    'LIKE': 2.3,
-    'FOLLOW': 3.0,
+    'Wish': 2.5,
     'Buy': 3.5,
     }
 
@@ -134,12 +134,13 @@ def get_filtering_tea(user_id):
     users_ids = list(similar_users_items_pivot_df.index)
     users_items_pivot_sparse_matrix = csr_matrix(users_items_pivot_matrix)
 
+
     # Truncated SVD 사용 ( 차원축소 특이값 분해 )
     # User-Item matrix에서 요인의 개수를 정한다 
     NUMBER_OF_FACTORS_MF = min(19, min(users_items_pivot_sparse_matrix.shape) - 1) #축소할 차원을 정한다.
     # User-Item Matrix을 분해한다 
     U, sigma, Vt = svds(users_items_pivot_sparse_matrix, k=NUMBER_OF_FACTORS_MF) 
-    sigma_mat = np.diag(sigma) 
+    sigma_mat = np.diag(sigma)
 
     all_user_predicted_ratings = np.dot(np.dot(U, sigma_mat), Vt) 
     all_user_predicted_ratings_norm = (all_user_predicted_ratings - all_user_predicted_ratings.min()) / (all_user_predicted_ratings.max() - all_user_predicted_ratings.min())
