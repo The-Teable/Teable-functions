@@ -17,6 +17,7 @@ class MYSQLDB:
         self.recommend_test_result = self.get_recommend_test_result()
         self.user_buy_df = self.get_user_buy()
         self.user_click_df = self.get_user_click()
+        self.user_wish_df = self.get_user_wish()
 
     def __del__(self):
         """소멸자: MariaDB 연결 해제"""
@@ -60,3 +61,11 @@ class MYSQLDB:
         user_click_df = pd.DataFrame(user_click_info)
         user_click_df['interaction_type'] = 'Click'
         return user_click_df
+
+    def get_user_wish(self):
+        """user_wish_product를 가져와서 user_wish_df에 저장"""
+        sql = "SELECT * FROM user_wish_product"
+        user_wish_info = pd.read_sql(sql, self.conn)
+        user_wish_df = pd.DataFrame(user_wish_info)
+        user_wish_df['interaction_type'] = 'Wish'
+        return user_wish_df
