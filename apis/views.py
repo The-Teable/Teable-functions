@@ -122,7 +122,9 @@ class MyPageInfoView(viewsets.ModelViewSet):
     serializer_class = MyPageInfoSerializer
 
     def list(self, request, *args, **kwargs):
-        user_id = self.kwargs['user_id'] if self.kwargs else None
+        token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
+        payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
+        user_id = payload['user_id']
         if user_id:
             mypage = MypageInfo.objects.filter(
                 user_id=user_id)
@@ -238,6 +240,11 @@ class FilteringResultsView(viewsets.ModelViewSet):
             return Response(teas)
 
     def create(self, request, *args, **kwargs):
+        token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
+        payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
+        user_id = payload['user_id']
+        request.data['user_id'] = user_id
+        print(request.data) # user_id를 header에서 받아오려고 함.
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         created_instance = serializer.save()
@@ -249,7 +256,9 @@ class MainFilteringResultView(viewsets.ModelViewSet):
     serializer_class = MainFilteringResultsSerializer
 
     def list(self, request, *args, **kwargs):
-        user_id = request.GET['user_id']
+        token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
+        payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
+        user_id = payload['user_id']
         if user_id:
             teave_filtering_result_map = teave_filtering.get_filtering_tea(user_id)
             teas = []
