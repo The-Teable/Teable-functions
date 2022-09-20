@@ -113,7 +113,7 @@ class LogInView(viewsets.ModelViewSet):
             # 'user' : (model_to_dict(user)),
             'access' : access,
         })
-        res.set_cookie('refresh', refresh, httponly=True)
+        res.set_cookie('refresh', refresh, secure=True, httponly=True)
         return res
 
 
