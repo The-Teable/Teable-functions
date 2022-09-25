@@ -37,10 +37,6 @@ mypage_info_list = MyPageInfoView.as_view({
     'get': 'list',
 })
 
-users_list = UsersView.as_view({
-    'post': 'create',
-})
-
 users_detail = UsersView.as_view({
     'put': 'update',
 })
@@ -63,26 +59,6 @@ survey_results_per_user = SurveyResultsView.as_view({
 survey_results_detail = SurveyResultsView.as_view({
     'get': 'retrieve'
 })
-
-# survey_results_2_create = SurveyResults2View.as_view({
-#     # 'get': 'list',
-#     'post': 'create',
-# })
-
-# survey_results_2_update = SurveyResults2View.as_view({
-#     # 'get': 'list',
-#     'put': 'update',
-#     'patch': 'partial_update'
-# })
-
-# survey_results_2_per_user = SurveyResults2View.as_view({
-#     'get': 'list'
-# })
-
-# survey_results_2_detail = SurveyResults2View.as_view({
-#     'get': 'retrieve'
-# })
-
 
 questionnaires_list = QuestionnairesView.as_view({
     'get': 'list'
