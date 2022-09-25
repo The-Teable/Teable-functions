@@ -116,15 +116,12 @@ class SurveyResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = SurveyResults
         fields = ['survey_responses']
+
     def create(self, validated_data):
-        query_params = self.context['request'].query_params
-        user_id = query_params.get('user_id')
-        version = query_params.get('version')
-        print(user_id, version, not(version), not(user_id))
-        if (not user_id) or (not version):
+        user_id = validated_data['user_id']
+        # version = query_params.get('version')
+        if (not user_id):
             raise serializers.ValidationError('Params not provided enough')
-        validated_data['user_id'] = user_id
-        validated_data['questionnaire_id'] = version
         validated_data['create_date'] = datetime.now()
         return super().create(validated_data)
     
@@ -135,31 +132,6 @@ class SurveyResultSerializer(serializers.ModelSerializer):
         validated_data['survey_id'] = survey_id
         validated_data['update_date'] = datetime.now()
         return super().update(instance, validated_data)
-
-# 설문조사 결과 
-# class SurveyResult2Serializer(serializers.ModelSerializer): 
-#     class Meta: 
-#         model = SurveyResults2 
-#         fields = ['survey_responses'] 
-#     def create(self, validated_data): 
-#         query_params = self.context['request'].query_params 
-#         user_id = query_params.get('user_id') 
-#         version = query_params.get('version') 
-#         print(user_id, version, not(version), not(user_id)) 
-#         if (not user_id) or (not version): 
-#             raise serializers.ValidationError('Params not provided enough') 
-#         validated_data['user_id'] = user_id 
-#         validated_data['questionnaire_id'] = version 
-#         validated_data['create_date'] = datetime.now() 
-#         return super().create(validated_data) 
-
-#     def update(self, instance, validated_data): 
-#         survey_id = self.context['request'].query_params.get('surveyId') 
-#         if not survey_id: 
-#             raise serializers.ValidationError('Params not provided enough') 
-#         validated_data['survey_id'] = survey_id 
-#         validated_data['update_date'] = datetime.now() 
-#         return super().update(instance, validated_data) 
 
 class QuestionnairesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -172,6 +144,7 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         fields = []
         
     def create(self, validated_data):
+        print(self.context['request']) # user_id를 header에서 받아오려고 함.
         query_params = self.context['request'].query_params
         user_id = query_params.get('user_id')
         survey_id = query_params.get('surveyId')
