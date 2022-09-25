@@ -107,10 +107,7 @@ class TeaSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['name', 'age', 'gender', 'tel', 'address', 'email']
-    def create(self, validated_data):
-        validated_data['create_date'] = datetime.now()
-        return super().create(validated_data)
+        fields = '__all__'
         
 class SurveyResultSerializer(serializers.ModelSerializer):
     class Meta:
@@ -141,13 +138,11 @@ class QuestionnairesSerializer(serializers.ModelSerializer):
 class FilteringResultsSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilteringResults
-        fields = []
+        fields = ['survey_id']
         
     def create(self, validated_data):
-        print(self.context['request']) # user_id를 header에서 받아오려고 함.
-        query_params = self.context['request'].query_params
-        user_id = query_params.get('user_id')
-        survey_id = query_params.get('surveyId')
+        user_id = validated_data['user_id']
+        survey_id = validated_data['survey_id']
         print(user_id, survey_id, not(survey_id), not(user_id))
         if not survey_id or not user_id:
             raise serializers.ValidationError('Params not provided enough')
@@ -164,7 +159,6 @@ class FilteringResultsSerializer(serializers.ModelSerializer):
         algorithm_result_str = common_filtering.tea_filtering(''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
         # algorithm_result_str = teave_filtering.get_filtering_tea(user_id, ''.join(tea_type), ''.join(tea_flavor), ''.join(tea_expect), tea_caffeine).to_json(orient = 'records', force_ascii = False)
         algorithm_result_json = json.loads(algorithm_result_str)
-        validated_data['user_id'] = user_id
         validated_data['survey_result_id'] = survey_result[0].id
         validated_data['create_date'] = datetime.now()
         created_instance = super().create(validated_data)
