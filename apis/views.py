@@ -116,7 +116,6 @@ class LogInView(viewsets.ModelViewSet):
         res.set_cookie('refresh', refresh, secure=True, httponly=True)
         return res
 
-
 class MyPageInfoView(viewsets.ModelViewSet):
     queryset = MypageInfo.objects.all()
     serializer_class = MyPageInfoSerializer
@@ -131,26 +130,6 @@ class MyPageInfoView(viewsets.ModelViewSet):
             mypage_info = []
             mypage_info.append({"user_class": mypage.user_class, "mileage": mypage.mileage, "coupon": mypage.coupon, 'order_history': mypage.order_history, 'delivery': mypage.delivery, 'review': mypage.review})
             return Response(mypage_info)
-
-class UsersView(viewsets.ModelViewSet):
-    queryset = Users.objects.all()
-    serializer_class = UserSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        created_instance = serializer.save()
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response({'user_id': created_instance.id}, status=201, headers=headers)
-
-    def get_object(self):
-        pk = self.kwargs['user_id'] if self.kwargs else None
-        queryset = self.filter_queryset(self.get_queryset())
-        if pk:
-            obj = queryset.get(pk=pk)
-            return obj
-        return queryset
 
 
 class SurveyResultsView(viewsets.ModelViewSet):
@@ -180,36 +159,6 @@ class SurveyResultsView(viewsets.ModelViewSet):
             obj = queryset.get(pk=pk)
             return obj
         return queryset
-
-# 설문조사 결과
-# class SurveyResults2View(viewsets.ModelViewSet):
-#     queryset = SurveyResults2.objects.all()
-#     serializer_class = SurveyResult2Serializer
-
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         created_instance = serializer.save()
-#         headers = self.get_success_headers(serializer.data)
-#         return Response({'survey_id': created_instance.id}, status=200, headers=headers)
-
-#     def get_queryset(self):
-#         user_id = self.kwargs['user_id'] if self.kwargs else None
-#         if user_id:
-#             return SurveyResults.objects.filter(user_id=user_id)
-#         return super().get_queryset()
-
-#     def get_object(self):
-#         pk = self.kwargs['pk'] if self.kwargs else None
-#         queryset = self.filter_queryset(self.get_queryset())
-#         if (len(queryset) > 0) and (self.request.query_params.get('surveyId')):
-#             obj = queryset.get(pk=self.request.query_params.get('surveyId'))
-#             return obj
-#         if pk:
-#             obj = queryset.get(pk=pk)
-#             return obj
-#         return queryset
-
 
 class QuestionnairesView(viewsets.ModelViewSet):
     queryset = Questionnaires.objects.all()
