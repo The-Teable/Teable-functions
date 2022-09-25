@@ -48,7 +48,6 @@ users_update = UsersView.as_view({
 })
 
 survey_results_create = SurveyResultsView.as_view({
-    # 'get': 'list',
     'post': 'create',
 })
 
@@ -144,10 +143,10 @@ urlpatterns = format_suffix_patterns([
     re_path('users/(?P<user_id>.+)/$', users_update, name="users_update"),
     
     # survey_results
-    path('survey-results/all/', survey_results_per_user, name='survey_results_per_user'),
-    re_path('survey-results/all/(?P<user_id>.+)/$', survey_results_per_user, name='survey_results_per_user'),
+    path('survey-results/', survey_results_per_user, name='survey_results_per_user'),
+    re_path('survey-results/(?P<user_id>.+)/$', survey_results_per_user, name='survey_results_per_user'),
     path('survey-results/<int:pk>/', survey_results_detail, name='survey_results_list'),
-    path('survey-results/new/', survey_results_create, name='survey_results_create'),
+    path('survey-results/', survey_results_create, name='survey_results_create'),
     path('survey-results/update/', survey_results_update, name='survey_results_update'),
 
 
