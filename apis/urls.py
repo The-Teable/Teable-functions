@@ -1,6 +1,8 @@
 from django.urls import path, include
 from django.contrib import admin
 from django.urls.conf import re_path
+
+from apis.models import Users
 # from apis.views import send_email
 from .views import (
     FilteringResultsView, MainFilteringResultView, MyPageInfoView, 
@@ -34,6 +36,10 @@ login = LogInView.as_view({
 })
 
 mypage_info_list = MyPageInfoView.as_view({
+    'get': 'list',
+})
+
+users_list = UsersView.as_view({
     'get': 'list',
 })
 
@@ -134,6 +140,7 @@ urlpatterns = format_suffix_patterns([
     re_path('signup/check/(?P<user_id>.+)/$', signup_check, name = 'signup_check'),
 
     # users
+    path('users/', users_list, name="users_list"),
     re_path('users/(?P<user_id>.+)/$', users_update, name="users_update"),
     
     # survey_results
