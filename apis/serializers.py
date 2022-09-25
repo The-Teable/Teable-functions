@@ -17,17 +17,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueValidator
 
 #auth serializer
-# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-
-#     def get_token(cls, user):
-#         token = super().get_token(user)
-#         # Add custom claims
-#         print(user)
-#         token['user_id'] = user.user_id
-#         token['name'] = user.name
-#         token['tel'] = user.tel
-#         # ...
-#         return token
 
 class SignUpSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -112,7 +101,7 @@ class UserSerializer(serializers.ModelSerializer):
 class SurveyResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = SurveyResults
-        fields = ['survey_responses']
+        fields = ['survey_responses', 'survey_id']
 
     def create(self, validated_data):
         user_id = validated_data['user_id']
@@ -120,13 +109,13 @@ class SurveyResultSerializer(serializers.ModelSerializer):
         if (not user_id):
             raise serializers.ValidationError('Params not provided enough')
         validated_data['create_date'] = datetime.now()
+        validated_data['questionnaire_id'] = 1
         return super().create(validated_data)
     
     def update(self, instance, validated_data):
-        survey_id = self.context['request'].query_params.get('surveyId')
+        survey_id = validated_data['survey_id']
         if not survey_id:
             raise serializers.ValidationError('Params not provided enough')
-        validated_data['survey_id'] = survey_id
         validated_data['update_date'] = datetime.now()
         return super().update(instance, validated_data)
 
