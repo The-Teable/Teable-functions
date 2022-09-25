@@ -128,6 +128,13 @@ class UsersView(viewsets.ModelViewSet):
             user = Users.objects.filter(user_id=user_id)
             return Response(user)
 
+    # def update(self, request, *args, **kwargs):
+    #     token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
+    #     payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
+    #     user_id = payload['user_id']
+    #     if user_id:
+
+
 class MyPageInfoView(viewsets.ModelViewSet):
     queryset = MypageInfo.objects.all()
     serializer_class = MyPageInfoSerializer
@@ -149,9 +156,12 @@ class SurveyResultsView(viewsets.ModelViewSet):
     serializer_class = SurveyResultSerializer
 
     def create(self, request, *args, **kwargs):
+        token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
+        payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
+        user_id = payload['user_id']
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        created_instance = serializer.save()
+        created_instance = serializer.save(user_id = user_id)
         headers = self.get_success_headers(serializer.data)
         return Response({'survey_id': created_instance.id}, status=201, headers=headers)
 
@@ -204,11 +214,9 @@ class FilteringResultsView(viewsets.ModelViewSet):
         token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
         payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
         user_id = payload['user_id']
-        request.data['user_id'] = user_id
-        print(request.data) # user_id를 header에서 받아오려고 함.
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        created_instance = serializer.save()
+        created_instance = serializer.save(user_id = user_id)
         return Response({'filtering_id': created_instance.id}, status=201)
 
 # 메인페이지에서 보여주는 Tea 추천 결과
