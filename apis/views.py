@@ -116,6 +116,18 @@ class LogInView(viewsets.ModelViewSet):
         res.set_cookie('refresh', refresh, secure=True, httponly=True)
         return res
 
+class UsersView(viewsets.ModelViewSet):
+    queryset = Users.objects.all()
+    serializer_class = UserSerializer
+
+    def list(self, request, *args, **kwargs):
+        token_str = str.replace(request.headers['Authorization'], 'Bearer ', '')
+        payload = jwt.decode(token_str, my_settings.SECRET_KEY , algorithms=['HS256'])
+        user_id = payload['user_id']
+        if user_id:
+            user = Users.objects.filter(user_id=user_id)
+            return Response(user)
+
 class MyPageInfoView(viewsets.ModelViewSet):
     queryset = MypageInfo.objects.all()
     serializer_class = MyPageInfoSerializer
