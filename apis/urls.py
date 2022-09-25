@@ -140,7 +140,7 @@ urlpatterns = format_suffix_patterns([
 
     # users
     path('users/', users_list, name="users_list"),
-    re_path('users/(?P<user_id>.+)/$', users_update, name="users_update"),
+    path('users/update/', users_update, name="users_update"),
     
     # survey_results
     path('survey-results/', survey_results_per_user, name='survey_results_per_user'),
