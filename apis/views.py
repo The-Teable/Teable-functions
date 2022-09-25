@@ -165,23 +165,6 @@ class SurveyResultsView(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response({'survey_id': created_instance.id}, status=201, headers=headers)
 
-    def get_queryset(self):
-        user_id = self.kwargs['user_id'] if self.kwargs else None
-        if user_id:
-            return SurveyResults.objects.filter(user_id=user_id)
-        return super().get_queryset()
-
-    def get_object(self):
-        pk = self.kwargs['pk'] if self.kwargs else None
-        queryset = self.filter_queryset(self.get_queryset())
-        if (len(queryset) > 0) and (self.request.query_params.get('surveyId')):
-            obj = queryset.get(pk=self.request.query_params.get('surveyId'))
-            return obj
-        if pk:
-            obj = queryset.get(pk=pk)
-            return obj
-        return queryset
-
 class QuestionnairesView(viewsets.ModelViewSet):
     queryset = Questionnaires.objects.all()
     serializer_class = QuestionnairesSerializer
