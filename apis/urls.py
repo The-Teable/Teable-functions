@@ -37,7 +37,7 @@ mypage_info_list = MyPageInfoView.as_view({
     'get': 'list',
 })
 
-users_detail = UsersView.as_view({
+users_update = UsersView.as_view({
     'put': 'update',
 })
 
@@ -133,11 +133,8 @@ urlpatterns = format_suffix_patterns([
     path('signup/check/', signup_check, name = 'signup_check'),
     re_path('signup/check/(?P<user_id>.+)/$', signup_check, name = 'signup_check'),
 
-    # path('auth/', include('rest_framework.urls', namespace='rest_framework')),
-
     # users
-    path('users/new/', users_list, name='users_list'),
-    re_path('users/(?P<user_id>.+)/$', users_detail, name="users_detail"),
+    re_path('users/(?P<user_id>.+)/$', users_update, name="users_update"),
     
     # survey_results
     path('survey-results/all/', survey_results_per_user, name='survey_results_per_user'),
@@ -146,12 +143,6 @@ urlpatterns = format_suffix_patterns([
     path('survey-results/new/', survey_results_create, name='survey_results_create'),
     path('survey-results/update/', survey_results_update, name='survey_results_update'),
 
-    # survey_results_2
-    # path('survey-results-2/all/', survey_results_2_per_user, name='survey_results_2_per_user'),
-    # re_path('survey-results-2/all/(?P<user_id>.+)/$', survey_results_2_per_user, name='survey_results_2_per_user'),
-    # path('survey-results-2/<int:pk>/', survey_results_2_detail, name='survey_results_2_list'),
-    # path('survey-results-2/new/', survey_results_2_create, name='survey_results_2_create'),
-    # path('survey-results-2/update/', survey_results_2_update, name='survey_results_2_update'),
 
     # questionnaires
     re_path('^questionnaires/', questionnaires_list, name='questionnaires_list'),
