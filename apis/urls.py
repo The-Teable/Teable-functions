@@ -69,7 +69,7 @@ questionnaires_list = QuestionnairesView.as_view({
     'get': 'list'
 })
 
-filtering_results_detail = FilteringResultsView.as_view({
+filtering_results_create = FilteringResultsView.as_view({
     'post': 'create',
 })
 
@@ -155,7 +155,7 @@ urlpatterns = format_suffix_patterns([
     re_path('^questionnaires/(?P<version>.+)/$', questionnaires_list, name='questionnaires_list'),
 
     # filtering_results
-    path('filtering-results/new/', filtering_results_detail, name='filtering_results_detail'),
+    path('filtering-results/', filtering_results_create, name='filtering_results_detail'),
     re_path('filtering-results/(?P<filteringId>.+)/$', filtering_results_list, name='filtering_results_list'),
 
     # main_filtering_results
