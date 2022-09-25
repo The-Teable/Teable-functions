@@ -181,7 +181,7 @@ class FilteringResultsView(viewsets.ModelViewSet):
     serializer_class = FilteringResultsSerializer
 
     def list(self, request, *args, **kwargs):
-        filtering_result_id = self.kwargs['filteringId'] if self.kwargs else None
+        filtering_result_id = self.kwargs['filtering_id'] if self.kwargs else None
         if filtering_result_id:
             result_map = FilteringResultProductMap.objects.filter(
                 filtering_result_id=filtering_result_id)
