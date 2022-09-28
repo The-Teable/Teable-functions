@@ -101,7 +101,7 @@ class UserSerializer(serializers.ModelSerializer):
 class SurveyResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = SurveyResults
-        fields = ['survey_responses', 'survey_id']
+        fields = ['survey_responses']
 
     def create(self, validated_data):
         user_id = validated_data['user_id']
@@ -112,12 +112,12 @@ class SurveyResultSerializer(serializers.ModelSerializer):
         validated_data['questionnaire_id'] = 1
         return super().create(validated_data)
     
-    def update(self, instance, validated_data):
-        survey_id = validated_data['survey_id']
-        if not survey_id:
-            raise serializers.ValidationError('Params not provided enough')
-        validated_data['update_date'] = datetime.now()
-        return super().update(instance, validated_data)
+    # def update(self, instance, validated_data):
+    #     survey_id = validated_data['survey_id']
+    #     if not survey_id:
+    #         raise serializers.ValidationError('Params not provided enough')
+    #     validated_data['update_date'] = datetime.now()
+    #     return super().update(instance, validated_data)
 
 class QuestionnairesSerializer(serializers.ModelSerializer):
     class Meta:
