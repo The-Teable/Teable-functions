@@ -190,7 +190,7 @@ class FilteringResultsView(viewsets.ModelViewSet):
                 tea_id = result.tea_id
                 tea = Teas.objects.get(id=tea_id)
                 teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                            'image_url': tea.image_url, 'site_url': tea.site_url, 'price': int(tea.price), 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
+                            'image_url': tea.image_url, 'site_url': tea.site_url, 'price': int(tea.price), 'stock': tea.stock, 'description': tea.description, 'create_date': tea.create_date, 'update_date': tea.update_date})
             return Response(teas)
 
     def create(self, request, *args, **kwargs):
@@ -219,7 +219,8 @@ class MainFilteringResultView(viewsets.ModelViewSet):
                 tea = Teas.objects.get(id=tea_id)
                 teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 
                             'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                            'price': int(tea.price)})
+                            'price': int(tea.price), 'description': tea.description,
+                            })
             return Response(teas)
 
 class ThemeFilteringView(viewsets.ModelViewSet):
@@ -238,7 +239,8 @@ class ThemeFilteringView(viewsets.ModelViewSet):
             for i in range(len(theme_filtering_result_map)):
                 result = theme_filtering_result_map.iloc[i]
                 teas['tea_info'].append(({"id": result['id'], "name": result['name'], "brand": result.brand, 'type': result.type, 'flavor': result.flavor, 'caffeine': result.caffeine, 'efficacies': result.efficacies,
-                            'image_url': result.image_url, 'price': int(result.price), 'stock': result.stock}))
+                            'image_url': result.image_url, 'price': int(result.price), 'stock': result.stock, 'description': result.description,
+                            }))
             tea_list.append(teas)
         return Response(tea_list)
 
@@ -254,7 +256,7 @@ class BestSellingView(viewsets.ModelViewSet):
             tea_id = result.tea_id
             tea = Teas.objects.get(id=tea_id)
             teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                        'image_url': tea.image_url, 'site_url': tea.site_url, 'price': int(tea.price), 'stock': tea.stock, 'create_date': tea.create_date, 'update_date': tea.update_date})
+                        'image_url': tea.image_url, 'site_url': tea.site_url, 'price': int(tea.price), 'stock': tea.stock, 'description': tea.description, 'create_date': tea.create_date, 'update_date': tea.update_date})
         return Response(teas)
 
 class UserBuyProductView(viewsets.ModelViewSet):
@@ -308,7 +310,8 @@ class UserWishProductView(viewsets.ModelViewSet):
                 tea = Teas.objects.get(id=tea_id)
                 teas.append({"id": tea.id, "name": tea.name, "brand": tea.brand, 'type': tea.type, 
                             'flavor': tea.flavor, 'caffeine': tea.caffeine, 'efficacies': tea.efficacies,
-                            'price': int(tea.price)})
+                            'price': int(tea.price), 'description': tea.description,
+                            })
             return Response(teas)
 
     def create(self, request, *args, **kwargs):
