@@ -145,7 +145,7 @@ class FilteringResults(models.Model):
 
 
 class MypageInfo(models.Model):
-    user_id = models.CharField(max_length=255)
+    user_id = models.CharField(unique=True, max_length=255)
     user_class = models.CharField(max_length=255)
     mileage = models.PositiveIntegerField(blank=True, null=True)
     coupon = models.PositiveIntegerField(blank=True, null=True)
@@ -196,6 +196,7 @@ class Teas(models.Model):
     stock = models.CharField(max_length=64, blank=True, null=True)
     sell_count = models.PositiveIntegerField()
     theme = models.CharField(max_length=255, blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
     create_date = models.DateTimeField()
     update_date = models.DateTimeField(blank=True, null=True)
 
