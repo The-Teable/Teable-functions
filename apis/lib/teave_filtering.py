@@ -33,7 +33,7 @@ def get_filtering_tea(user_id):
     # UserAge = int(User_df[User_df['user_id'] == user_id].age)
     Tea_df = myDB.teas
     Tea_df.caffeine.replace(
-        ['O', 'X'],
+        ['카페인', '무카페인'],
         ['true', 'false'], inplace=True
     )
 
