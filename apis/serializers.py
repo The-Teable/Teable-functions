@@ -207,3 +207,11 @@ class UserWishProductSerializer(serializers.ModelSerializer):
         validated_data['create_date'] = datetime.now()
         return super().create(validated_data)
 
+class UserCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserCart
+        fields = ['tea_id']
+
+    def create(self, validated_data):
+        validated_data['create_date'] = datetime.now()
+        return super().create(validated_data)
