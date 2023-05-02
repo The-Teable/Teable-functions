@@ -64,7 +64,7 @@ class SendEmail(APIView):
             conn.ehlo()
 
             loginId = 'connect@teave.co.kr'
-            loginPassword = ''
+            loginPassword = ' '
             conn.login(loginId, loginPassword)
 
             conn.sendmail(fromEmail, toEmail, msg.as_string())

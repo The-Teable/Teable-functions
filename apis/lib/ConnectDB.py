@@ -11,7 +11,7 @@ class MYSQLDB:
     def __init__(self):
         """생성자: MariaDB 연결 및 종목코드 딕셔너리 생성"""
         self.conn = pymysql.connect(host='localhost', user='root',
-                                    password='', db='teable_dev', charset='utf8')
+                                    password=' ', db='teable_dev', charset='utf8')
         self.users = self.get_user()
         self.teas = self.get_content()
         self.recommend_test_result = self.get_recommend_test_result()
